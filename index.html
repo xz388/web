@@ -529,6 +529,71 @@
             .members-grid { grid-template-columns: repeat(4, 1fr); }
         }
 
+        /* ========== PROFILE MODAL ========== */
+        .modal {
+            position: fixed; inset: 0; z-index: 11000;
+            background: rgba(0,0,0,0.7); backdrop-filter: blur(12px);
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; visibility: hidden; transition: all 0.4s ease;
+        }
+        .modal.show { opacity: 1; visibility: visible; }
+        .modal-content {
+            background: linear-gradient(160deg, #141428, #0a0a14);
+            border: 1px solid rgba(255,215,0,0.12);
+            border-radius: 28px; padding: 44px 36px 32px;
+            max-width: 340px; width: 90%; text-align: center;
+            position: relative; transform: scale(0.85) translateY(20px);
+            transition: transform 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 40px 100px rgba(0,0,0,0.6), 0 0 60px rgba(255,215,0,0.03);
+        }
+        .modal.show .modal-content { transform: scale(1) translateY(0); }
+        .modal-close {
+            position: absolute; top: 16px; right: 20px;
+            background: none; border: none; color: #555; font-size: 1.1rem;
+            cursor: pointer; transition: 0.3s; padding: 4px 8px; border-radius: 8px;
+        }
+        .modal-close:hover { color: #ffd700; background: rgba(255,215,0,0.06); }
+        .modal-avatar {
+            width: 88px; height: 88px; border-radius: 50%;
+            background: linear-gradient(135deg, #ffd700, #b8860b);
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 18px; font-size: 2.2rem; font-weight: 700; color: #050508;
+            box-shadow: 0 0 50px rgba(255,215,0,0.15);
+            position: relative;
+        }
+        .modal-avatar::after {
+            content: ''; position: absolute; inset: -4px;
+            border-radius: 50%; border: 2px solid rgba(255,215,0,0.15);
+        }
+        .modal-name { font-size: 1.6rem; font-weight: 700; color: #f0f0ff; letter-spacing: 1px; }
+        .modal-tag {
+            display: inline-block; margin-top: 10px; padding: 5px 22px;
+            border-radius: 50px; font-size: 0.65rem; font-weight: 700; letter-spacing: 2px;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, rgba(255,215,0,0.12), rgba(255,215,0,0.05));
+            color: #ffd700; border: 1px solid rgba(255,215,0,0.2);
+        }
+        .modal-bio { font-size: 0.85rem; color: #8888aa; margin-top: 12px; font-weight: 300; }
+        .modal-divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(255,215,0,0.1), transparent); margin: 20px 0; }
+        .modal-stats { display: flex; justify-content: center; gap: 32px; }
+        .modal-stat { text-align: center; }
+        .modal-stat-num { font-size: 1.3rem; color: #ffd700; display: block; }
+        .modal-stat-label { font-size: 0.6rem; color: #6666aa; letter-spacing: 1.5px; margin-top: 6px; display: block; text-transform: uppercase; }
+        .modal-social { margin-top: 18px; display: flex; justify-content: center; gap: 12px; }
+        .modal-social a {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 8px 18px; border-radius: 50px;
+            font-size: 0.75rem; font-weight: 600; text-decoration: none;
+            transition: all 0.3s;
+            border: 1px solid rgba(255,215,0,0.15);
+            color: #ffd700; background: rgba(255,215,0,0.05);
+        }
+        .modal-social a:hover {
+            background: rgba(255,215,0,0.15);
+            border-color: #ffd700; transform: translateY(-1px);
+            box-shadow: 0 4px 20px rgba(255,215,0,0.1);
+        }
+
         /* Touch devices - remove hover effects that stick */
         @media (hover: none) and (pointer: coarse) {
             .member-card:hover { transform: none; box-shadow: none; border-color: rgba(255,215,0,0.08); }
@@ -745,10 +810,10 @@
             <div class="line"></div>
         </div>
         <div class="members-grid">
-            <div class="member-card"><div class="avatar">S</div><div class="name" data-i18n="nameSl6an">Sl6an</div><div class="tag" data-i18n="owner">Owner</div></div>
-            <div class="member-card"><div class="avatar">R</div><div class="name" data-i18n="nameRaad">Raad</div><div class="tag" data-i18n="founder">Founder</div></div>
-            <div class="member-card"><div class="avatar">S</div><div class="name" data-i18n="nameSamer">Samer</div><div class="tag" data-i18n="founder">Founder</div></div>
-            <div class="member-card"><div class="avatar">R</div><div class="name" data-i18n="nameRayan">Rayan</div><div class="tag" data-i18n="founder">Founder</div></div>
+            <div class="member-card" onclick="openProfile('sl6an')"><div class="avatar">S</div><div class="name" data-i18n="nameSl6an">Sl6an</div><div class="tag" data-i18n="owner">Owner</div></div>
+            <div class="member-card" onclick="openProfile('raad')"><div class="avatar">R</div><div class="name" data-i18n="nameRaad">Raad</div><div class="tag" data-i18n="founder">Founder</div></div>
+            <div class="member-card" onclick="openProfile('samer')"><div class="avatar">S</div><div class="name" data-i18n="nameSamer">Samer</div><div class="tag" data-i18n="founder">Founder</div></div>
+            <div class="member-card" onclick="openProfile('rayan')"><div class="avatar">R</div><div class="name" data-i18n="nameRayan">Rayan</div><div class="tag" data-i18n="founder">Founder</div></div>
         </div>
     </section>
 
@@ -759,9 +824,9 @@
             <div class="line"></div>
         </div>
         <div class="grid-center">
-            <div class="member-card"><div class="avatar">A</div><div class="name" data-i18n="nameAbdullah">Abdullah</div></div>
-            <div class="member-card"><div class="avatar">M</div><div class="name" data-i18n="nameMoayad">Moayad</div></div>
-            <div class="member-card"><div class="avatar">A</div><div class="name" data-i18n="nameAbdulaziz">Abdulaziz</div></div>
+            <div class="member-card" onclick="openProfile('abdullah')"><div class="avatar">A</div><div class="name" data-i18n="nameAbdullah">Abdullah</div></div>
+            <div class="member-card" onclick="openProfile('moayad')"><div class="avatar">M</div><div class="name" data-i18n="nameMoayad">Moayad</div></div>
+            <div class="member-card" onclick="openProfile('abdulaziz')"><div class="avatar">A</div><div class="name" data-i18n="nameAbdulaziz">Abdulaziz</div></div>
         </div>
     </section>
 
@@ -838,7 +903,7 @@
                     <button class="mp-btn" id="mpVolBtn" title="Volume">♫</button>
                     <div class="mp-vol-slider">
                         <div class="mp-vol-track">
-                            <div class="mp-vol-fill" id="mpVolFill" style="width:10%"></div>
+                            <div class="mp-vol-fill" id="mpVolFill" style="width:5%"></div>
                         </div>
                     </div>
                 </div>
@@ -846,6 +911,24 @@
         </div>
     </section>
 
+</div>
+
+<!-- ===== PROFILE MODAL ===== -->
+<div id="profileModal" class="modal" onclick="closeProfile(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <button class="modal-close" onclick="closeProfile()">✕</button>
+        <div class="modal-avatar" id="modalAvatar">S</div>
+        <div class="modal-name" id="modalName">Sl6an</div>
+        <div class="modal-tag" id="modalTag">Owner</div>
+        <div class="modal-bio" id="modalBio">BrotherHood Owner</div>
+        <div class="modal-divider"></div>
+        <div class="modal-stats">
+            <div class="modal-stat"><span class="modal-stat-num">★</span><span class="modal-stat-label" data-i18n="role">Role</span></div>
+            <div class="modal-stat"><span class="modal-stat-num">♥</span><span class="modal-stat-label" data-i18n="memberSince">Member Since</span></div>
+        </div>
+        <div class="modal-desc" id="modalDesc">Member of BrotherHood.</div>
+        <div class="modal-social" id="modalSocial"></div>
+    </div>
 </div>
 
 <!-- ===== FOOTER ===== -->
@@ -960,6 +1043,60 @@ document.querySelectorAll('.nav-btn').forEach(btn => {
     });
 });
 
+// ==================== PROFILES ====================
+const profiles = {
+    sl6an: { avatar: 'S', name: 'Sl6an', tag: 'Owner', bio: 'The one who started it all', bioKey: 'bioSl6an', stats: ['★', '♥'], statLabels: ['Leader', '2021'], statKeys: ['statLeader', 'stat2021'], desc: '' },
+    raad: { avatar: 'R', name: 'Raad', tag: 'Founder', bio: 'Co-founder', bioKey: 'bioRaad', stats: ['★', '♥'], statLabels: ['Co-Leader', '2021'], statKeys: ['statCoLeader', 'stat2021'], desc: '', youtube: 'https://www.youtube.com/@%D8%B1%D8%B9%D8%AF-%D9%81%D9%87%D8%AF' },
+    samer: { avatar: 'S', name: 'Samer', tag: 'Founder', bio: 'Co-founder', bioKey: 'bioSamer', stats: ['★', '♥'], statLabels: ['Co-Leader', '2021'], statKeys: ['statCoLeader', 'stat2021'], desc: '' },
+    rayan: { avatar: 'R', name: 'Rayan', tag: 'Founder', bio: 'Co-founder', bioKey: 'bioRayan', stats: ['★', '♥'], statLabels: ['Co-Leader', '2021'], statKeys: ['statCoLeader', 'stat2021'], desc: '' },
+    abdullah: { avatar: 'A', name: 'Abdullah', tag: 'Cousin', bio: 'Group member', bioKey: 'bioAbdullah', stats: ['♥', '♦'], statLabels: ['Brother', 'Since Day 1'], statKeys: ['statBrother', 'statSinceDay1'], desc: '' },
+    moayad: { avatar: 'M', name: 'Moayad', tag: 'Cousin', bio: 'Group member', bioKey: 'bioMoayad', stats: ['♥', '♦'], statLabels: ['Brother', 'Since Day 1'], statKeys: ['statBrother', 'statSinceDay1'], desc: '' },
+    abdulaziz: { avatar: 'A', name: 'Abdulaziz', tag: 'Cousin', bio: 'Group member', bioKey: 'bioAbdulaziz', stats: ['♥', '♦'], statLabels: ['Brother', 'Since Day 1'], statKeys: ['statBrother', 'statSinceDay1'], desc: '', youtube: 'https://www.youtube.com/@%D9%85%D8%A7%D9%84%D9%83%D9%8A711' },
+};
+
+function openProfile(id) {
+    const p = profiles[id];
+    if (!p) return;
+    document.getElementById('modalAvatar').textContent = p.avatar;
+    document.getElementById('modalName').textContent = p.name;
+    document.getElementById('modalTag').textContent = p.tag;
+    const bioEn = p.bio;
+    const bioKey = p.bioKey;
+    document.getElementById('modalBio').textContent = (currentLang === 'ar' && bioKey && lang.ar[bioKey]) ? lang.ar[bioKey] : bioEn;
+    const statLabels = document.querySelectorAll('.modal-stat-label');
+    for (let i = 0; i < Math.min(2, p.stats.length); i++) {
+        document.querySelectorAll('.modal-stat-num')[i].textContent = p.stats[i];
+        const key = p.statKeys ? p.statKeys[i] : null;
+        const trans = currentLang === 'ar' && key && lang.ar[key] ? lang.ar[key] : (p.statLabels ? p.statLabels[i] : '');
+        statLabels[i].textContent = trans;
+        statLabels[i].setAttribute('data-i18n-orig', p.statLabels ? p.statLabels[i] : '');
+        if (key) statLabels[i].setAttribute('data-i18n-key', key);
+    }
+    const descEl = document.getElementById('modalDesc');
+    if (p.desc) { descEl.textContent = p.desc; descEl.style.display = ''; }
+    else { descEl.style.display = 'none'; }
+    window._currentProfile = p;
+    const socialEl = document.getElementById('modalSocial');
+    socialEl.innerHTML = '';
+    if (p.youtube) {
+        const a = document.createElement('a');
+        a.href = p.youtube; a.target = '_blank'; a.rel = 'noopener';
+        a.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="#ff0000"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6a3 3 0 0 0-2.1 2.1C0 8.1 0 12 0 12s0 3.9.5 5.8a3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1c.5-1.9.5-5.8.5-5.8s0-3.9-.5-5.8z"/><path fill="#fff" d="M9.5 15.5V8.5l6.5 3.5z"/></svg> YouTube';
+        a.title = 'YouTube';
+        socialEl.appendChild(a);
+    }
+    document.getElementById('profileModal').classList.add('show');
+}
+
+function closeProfile(e) {
+    if (e && e.target !== e.currentTarget) return;
+    document.getElementById('profileModal').classList.remove('show');
+}
+
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeProfile();
+});
+
 // ==================== ARABIC TRANSLATION ====================
 const lang = {
     ar: {
@@ -981,6 +1118,18 @@ const lang = {
         nameAbdullah: 'عبدالله',
         nameMoayad: 'مؤيد',
         nameAbdulaziz: 'عبدالعزيز',
+        statLeader: 'القائد',
+        statCoLeader: 'نائب القائد',
+        stat2021: '2021',
+        statBrother: 'أخ',
+        statSinceDay1: 'من اليوم الأول',
+        bioSl6an: 'الذي بدأ كل شيء',
+        bioRaad: 'مؤسس مشارك',
+        bioSamer: 'مؤسس مشارك',
+        bioRayan: 'مؤسس مشارك',
+        bioAbdullah: 'عضو في القروب',
+        bioMoayad: 'عضو في القروب',
+        bioAbdulaziz: 'عضو في القروب',
         update1Title: 'إطلاق الموقع',
         update1Desc: 'الموقع الرسمي لـ BrotherHood أصبح متاحاً الآن.',
         update2Title: 'انضمام أعضاء جدد',
@@ -1007,11 +1156,30 @@ document.getElementById('langToggle').addEventListener('click', () => {
             const key = el.dataset.i18n;
             if (lang.ar[key]) el.textContent = lang.ar[key];
         });
+        document.querySelectorAll('.modal-stat-label').forEach(el => {
+            const orig = el.getAttribute('data-i18n-orig');
+            const key = el.getAttribute('data-i18n-key');
+            if (key && lang.ar[key]) el.textContent = lang.ar[key];
+        });
     } else {
         document.documentElement.dir = 'ltr';
         document.querySelectorAll('[data-i18n]').forEach(el => {
             const key = el.dataset.i18n;
             if (lang.ar[key]) el.textContent = el.getAttribute('data-i18n-orig') || el.textContent;
+        });
+        document.querySelectorAll('.modal-stat-label').forEach(el => {
+            const orig = el.getAttribute('data-i18n-orig');
+            el.textContent = orig || el.textContent;
+        });
+    }
+    const modal = document.getElementById('profileModal');
+    if (modal.classList.contains('show') && window._currentProfile) {
+        const key = window._currentProfile.bioKey;
+        document.getElementById('modalBio').textContent = (currentLang === 'ar' && key && lang.ar[key]) ? lang.ar[key] : window._currentProfile.bio;
+        document.querySelectorAll('.modal-stat-label').forEach(el => {
+            const orig = el.getAttribute('data-i18n-orig');
+            const keyAttr = el.getAttribute('data-i18n-key');
+            el.textContent = (currentLang === 'ar' && keyAttr && lang.ar[keyAttr]) ? lang.ar[keyAttr] : orig;
         });
     }
 });
@@ -1029,14 +1197,14 @@ window.addEventListener('keydown', e => {
 
 // ==================== MUSIC PLAYER ====================
 const playlist = [
-    { src: 'music/death%20bed%20%20powfu%20%5Bsped%20up%5D%20-%20samanthaxoxo.mp3' }
+    { src: 'music/death%20bed%20powfu%20%5Bsped%20up%5D.mp3' },
+    { src: 'music/track2.mp3' }
 ];
 let currentTrack = 0;
 let isPlaying = false;
-let isRepeating = playlist.length <= 1;
+let isRepeating = false;
 const audio = new Audio();
-audio.loop = isRepeating;
-audio.volume = 0.1;
+audio.volume = 0.05;
 
 const playBtn = document.getElementById('mpPlay');
 const prevBtn = document.getElementById('mpPrev');
@@ -1047,15 +1215,6 @@ const barThumb = document.getElementById('mpBarThumb');
 const currentTimeEl = document.getElementById('mpCurrent');
 const durationEl = document.getElementById('mpDuration');
 const barTrack = document.querySelector('.mp-bar-track');
-
-function loadTrack(index) {
-    if (!playlist[index]) return;
-    audio.src = playlist[index].src;
-    audio.load();
-    if (isPlaying) {
-        audio.play().catch(() => {});
-    }
-}
 
 // ===== AUDIO SPECTRUM =====
 const spectrumCanvas = document.getElementById('mpSpectrum');
@@ -1144,28 +1303,41 @@ function togglePlay() {
     }
 }
 
+function loadAndPlay(index, cb) {
+    if (!playlist.length) return;
+    currentTrack = ((index % playlist.length) + playlist.length) % playlist.length;
+    audio.src = playlist[currentTrack].src;
+    audio.load();
+    let done = false;
+    const ok = () => { if (done) return; done = true; audio.removeEventListener('canplaythrough', ok); audio.removeEventListener('error', fail); cb(true); };
+    const fail = () => { if (done) return; done = true; audio.removeEventListener('canplaythrough', ok); audio.removeEventListener('error', fail); cb(false); };
+    audio.addEventListener('canplaythrough', ok, { once: true });
+    audio.addEventListener('error', fail, { once: true });
+    setTimeout(() => { if (!done) { done = true; fail(); } }, 5000);
+}
+
+function playTrack(index) {
+    loadAndPlay(index, success => {
+        if (success) {
+            audio.play().then(() => { isPlaying = true; playBtn.textContent = '⏸'; }).catch(() => {});
+        } else {
+            playTrack(index + 1);
+        }
+    });
+}
+
+function toggleRepeat() {
+    isRepeating = !isRepeating;
+    repeatBtn.classList.toggle('active', isRepeating);
+}
+
 function nextTrack() {
-    if (playlist.length === 0) return;
-    currentTrack = (currentTrack + 1) % playlist.length;
-    if (isPlaying) { isPlaying = false; playBtn.textContent = '▶'; }
-    loadTrack(currentTrack);
-    if (isPlaying) {
-        audio.play().catch(() => {});
-    }
+    playTrack(currentTrack + 1);
 }
 
 function prevTrack() {
-    if (playlist.length === 0) return;
-    if (audio.currentTime > 2) {
-        audio.currentTime = 0;
-        return;
-    }
-    currentTrack = (currentTrack - 1 + playlist.length) % playlist.length;
-    if (isPlaying) { isPlaying = false; playBtn.textContent = '▶'; }
-    loadTrack(currentTrack);
-    if (isPlaying) {
-        audio.play().catch(() => {});
-    }
+    if (audio.currentTime > 2) { audio.currentTime = 0; return; }
+    playTrack(currentTrack - 1);
 }
 
 function formatTime(s) {
@@ -1185,12 +1357,6 @@ function updateBar() {
     }
 }
 
-function toggleRepeat() {
-    isRepeating = !isRepeating;
-    audio.loop = isRepeating;
-    repeatBtn.classList.toggle('active', isRepeating);
-}
-
 function setVolume(pct) {
     audio.volume = pct;
     document.getElementById('mpVolFill').style.width = (pct * 100) + '%';
@@ -1208,14 +1374,7 @@ function seek(e) {
 playBtn.addEventListener('click', togglePlay);
 prevBtn.addEventListener('click', prevTrack);
 nextBtn.addEventListener('click', nextTrack);
-// if only one track, repeat is always on
-if (playlist.length <= 1) {
-    isRepeating = true;
-    audio.loop = true;
-    repeatBtn.classList.add('active');
-} else {
-    repeatBtn.addEventListener('click', toggleRepeat);
-}
+repeatBtn.addEventListener('click', toggleRepeat);
 barTrack.addEventListener('click', seek);
 
 document.querySelector('.mp-vol-slider').addEventListener('click', e => {
@@ -1236,20 +1395,35 @@ audio.addEventListener('ended', () => {
     if (isRepeating) {
         audio.currentTime = 0;
         audio.play().catch(() => {});
-    } else {
-        nextTrack();
+        return;
     }
+    nextTrack();
 });
 audio.addEventListener('play', () => { isPlaying = true; playBtn.textContent = '⏸'; });
 audio.addEventListener('pause', () => { isPlaying = false; playBtn.textContent = '▶'; });
 
-// tap overlay + auto-play
+// check how many files exist using temp Audio elements
+function countValidTracks(cb) {
+    let done = 0; let valid = 0;
+    playlist.forEach((t, i) => {
+        const tmp = new Audio();
+        let counted = false;
+        const c = () => { if (counted) return; counted = true; done++; if (done === playlist.length) cb(valid); };
+        tmp.addEventListener('canplaythrough', () => { valid++; c(); }, { once: true });
+        tmp.addEventListener('error', c, { once: true });
+        tmp.src = t.src; tmp.load();
+        // timeout fallback
+        setTimeout(() => { if (!counted) { counted = true; done++; if (done === playlist.length) cb(valid); } }, 3000);
+    });
+}
+
 document.getElementById('tapOverlay').addEventListener('click', () => {
     document.getElementById('tapOverlay').classList.add('hidden');
-    loadTrack(0);
     drawSpectrum();
-    audio.play().catch(() => {
-        audio.addEventListener('canplay', () => audio.play().catch(() => {}), { once: true });
+    countValidTracks(valid => {
+        isRepeating = valid <= 1;
+        repeatBtn.classList.toggle('active', isRepeating);
+        playTrack(0);
     });
 });
 
