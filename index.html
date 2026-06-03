@@ -594,6 +594,8 @@
             box-shadow: 0 4px 20px rgba(255,215,0,0.1);
         }
 
+
+
         /* Touch devices - remove hover effects that stick */
         @media (hover: none) and (pointer: coarse) {
             .member-card:hover { transform: none; box-shadow: none; border-color: rgba(255,215,0,0.08); }
@@ -837,28 +839,8 @@
             <h2 data-i18n="latestUpdates">📢 Latest Updates</h2>
             <div class="line"></div>
         </div>
-        <div class="updates-list">
-            <div class="update-card">
-                <div class="date">May 25, 2026</div>
-                <div class="title" data-i18n="update1Title">Website Launch</div>
-                <div class="desc" data-i18n="update1Desc">BrotherHood official website is now live.</div>
-            </div>
-            <div class="update-card">
-                <div class="date">May 20, 2026</div>
-                <div class="title" data-i18n="update2Title">New Members Joined</div>
-                <div class="desc" data-i18n="update2Desc">Welcome Abdulaziz to the group.</div>
-            </div>
-            <div class="update-card">
-                <div class="date">May 15, 2026</div>
-                <div class="title" data-i18n="update3Title">Discord Server Upgraded</div>
-                <div class="desc" data-i18n="update3Desc">New roles, bots, and event channels added.</div>
-            </div>
-            <div class="update-card">
-                <div class="date">May 10, 2026</div>
-                <div class="title" data-i18n="update4Title">YouTube Channel Prep</div>
-                <div class="desc" data-i18n="update4Desc">Planning content and branding for the channel.</div>
-            </div>
-        </div>
+        <div class="updates-list" id="updatesList"></div>
+        <a href="archive.html" style="display:block;text-align:center;margin-top:16px;color:#444488;font-size:0.7rem;text-decoration:none;letter-spacing:1px;transition:0.3s">📦 View Archive →</a>
     </section>
 
     <!-- ===== DINO GAME ===== -->
@@ -939,6 +921,7 @@
 </footer>
 
 <!-- ===== SCRIPTS ===== -->
+
 <script>
 // ==================== CURSOR GLOW ====================
 const glow = document.getElementById('cursorGlow');
@@ -1205,6 +1188,12 @@ let isPlaying = false;
 let isRepeating = false;
 const audio = new Audio();
 audio.volume = 0.05;
+function saveAudioState() {
+    try { localStorage.setItem('bhAudio', JSON.stringify({ src:audio.src, ct:audio.currentTime, cur:currentTrack, vol:audio.volume, playing:isPlaying, muted:audio.muted })); } catch(e) {}
+}
+audio.addEventListener('timeupdate', saveAudioState);
+audio.addEventListener('play', saveAudioState);
+audio.addEventListener('pause', saveAudioState);
 
 const playBtn = document.getElementById('mpPlay');
 const prevBtn = document.getElementById('mpPrev');
@@ -1417,14 +1406,81 @@ function countValidTracks(cb) {
     });
 }
 
-document.getElementById('tapOverlay').addEventListener('click', () => {
+// skip tap-overlay when coming from admin/archive (localStorage flag)
+const fromInternal = localStorage.getItem('bhFromInternal');
+try { localStorage.removeItem('bhFromInternal'); } catch(e) {}
+if (fromInternal === '1') {
     document.getElementById('tapOverlay').classList.add('hidden');
     drawSpectrum();
-    countValidTracks(valid => {
-        isRepeating = valid <= 1;
-        repeatBtn.classList.toggle('active', isRepeating);
-        playTrack(0);
+    try {
+        const saved = JSON.parse(localStorage.getItem('bhAudio'));
+        if (saved && saved.src) {
+            audio.src = saved.src;
+            if (saved.ct > 0) audio.currentTime = saved.ct;
+            audio.volume = saved.vol || 0.05;
+            audio.muted = saved.muted || false;
+            if (saved.cur !== undefined) currentTrack = saved.cur;
+            audio.play().then(() => { isPlaying = true; playBtn.textContent = '⏸'; }).catch(() => {});
+        }
+    } catch(e) {}
+    countValidTracks(valid => { isRepeating = valid <= 1; repeatBtn.classList.toggle('active', isRepeating); });
+} else {
+    document.getElementById('tapOverlay').addEventListener('click', () => {
+        document.getElementById('tapOverlay').classList.add('hidden');
+        drawSpectrum();
+        countValidTracks(valid => {
+            isRepeating = valid <= 1;
+            repeatBtn.classList.toggle('active', isRepeating);
+            playTrack(0);
+        });
     });
+}
+
+// ==================== UPDATES SYSTEM ====================
+let updatesData;
+try { updatesData = JSON.parse(localStorage.getItem('bhUpdates')) || null; } catch(e) { updatesData = null; }
+if (!updatesData) updatesData = [
+    { date: '2026-05-25', title: 'Website Launch', desc: 'BrotherHood official website is now live.', titleAr: 'إطلاق الموقع', descAr: 'الموقع الرسمي لـ BrotherHood أصبح متاحاً الآن.' },
+    { date: '2026-05-20', title: 'New Members Joined', desc: 'Welcome Abdulaziz to the group.', titleAr: 'انضمام أعضاء جدد', descAr: 'مرحباً عبدالعزيز في القروب.' },
+    { date: '2026-05-15', title: 'Discord Server Upgraded', desc: 'New roles, bots, and event channels added.', titleAr: 'تطوير سيرفر ديسكورد', descAr: 'إضافة رتب جديدة، بوتات، وقنوات فعاليات.' },
+    { date: '2026-05-10', title: 'YouTube Channel Prep', desc: 'Planning content and branding for the channel.', titleAr: 'تجهيز قناة يوتيوب', descAr: 'تخطيط المحتوى والهوية البصرية للقناة.' }
+];
+
+function renderUpdates() {
+    const container = document.getElementById('updatesList');
+    if (!container) return;
+    container.innerHTML = updatesData.slice(0, 5).map(u => {
+        const d = new Date(u.date);
+        const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        return `<div class="update-card">
+            <div class="date">${dateStr}</div>
+            <div class="title" data-i18n-orig="${u.title}">${currentLang === 'ar' && u.titleAr ? u.titleAr : u.title}</div>
+            <div class="desc" data-i18n-orig="${u.desc}">${currentLang === 'ar' && u.descAr ? u.descAr : u.desc}</div>
+        </div>`;
+    }).join('');
+}
+renderUpdates();
+
+// ==================== SECRET ADMIN PANEL (MMM) ====================
+let _mCount = 0;
+let _mTimer = null;
+document.addEventListener('keydown', e => {
+    if (e.code === 'KeyM') {
+        _mCount++;
+        if (_mTimer) clearTimeout(_mTimer);
+        _mTimer = setTimeout(() => { _mCount = 0; }, 600);
+        if (_mCount >= 3) {
+            _mCount = 0;
+            window.location.href = 'admin.html';
+        }
+    } else {
+        _mCount = 0;
+    }
+});
+
+// re-render updates when language changes
+document.getElementById('langToggle').addEventListener('click', () => {
+    setTimeout(renderUpdates, 10);
 });
 
 </script>
