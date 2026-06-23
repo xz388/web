@@ -1260,6 +1260,7 @@ let isPlaying = false;
 let isRepeating = false;
 const audio = new Audio();
 audio.volume = 0.05;
+audio.loop = true;
 function saveAudioState() {
     try { localStorage.setItem('bhAudio', JSON.stringify({ src:audio.src, ct:audio.currentTime, cur:currentTrack, vol:audio.volume, playing:isPlaying, muted:audio.muted })); } catch(e) {}
 }
