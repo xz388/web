@@ -528,10 +528,6 @@ function startTrackFromSaved() {
         if (saved && saved.src) {
             audio.volume = saved.vol || 0.05;
             audio.muted = saved.muted || false;
-            if (saved.cur !== undefined && saved.cur >= 0 && saved.cur < playlist.length) {
-                playTrack(saved.cur);
-                return;
-            }
         }
     } catch(e) {}
     playTrack(1);
