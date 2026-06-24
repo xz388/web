@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><title>Audio Test</title></head><body>
+<h2>Audio Test</h2>
+<button id="playBtn">▶ Play track2.mp3</button>
+<div id="status">Not started</div>
+<script>
+document.getElementById('playBtn').addEventListener('click', function(){
+  var a = new Audio('music/track2.mp3');
+  a.volume = 0.5;
+  var p = a.play();
+  document.getElementById('status').textContent = 'Playing...';
+  if(p) {
+    p.then(function(){ document.getElementById('status').textContent = '✅ Playing!'; })
+     .catch(function(e){ document.getElementById('status').textContent = '❌ Play failed: '+e; });
+  }
+});
+</script>
+</body></html>
