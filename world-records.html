@@ -548,24 +548,15 @@ function initAudio() {
         repeatBtn.classList.toggle('active', isRepeating);
     });
 }
-const fromInternal = localStorage.getItem('bhFromInternal');
-try { localStorage.removeItem('bhFromInternal'); } catch(e) {}
-if (fromInternal === '1') {
-    document.getElementById('tapOverlay').classList.add('hidden');
-    try { localStorage.setItem('bhFromInternal', '1'); } catch(e) {}
+document.getElementById('tapOverlay').addEventListener('click', function() {
+    this.classList.add('hidden');
     drawSpectrum();
-    countValidTracks(valid => {
+    countValidTracks(function(valid) {
         isRepeating = valid <= 1;
         repeatBtn.classList.toggle('active', isRepeating);
         startTrackFromSaved();
     });
-} else {
-    document.getElementById('tapOverlay').addEventListener('click', function() {
-        this.classList.add('hidden');
-        try { localStorage.setItem('bhFromInternal', '1'); } catch(e) {}
-        initAudio();
-    });
-}
+});
 </script>
 </body>
 </html>
