@@ -187,7 +187,11 @@
 </div>
 <script>
 function getLB() {
-    try { var d = JSON.parse(localStorage.getItem('bhLeaderboard')); if (d && d.length) return d; } catch(e) {}
+    try {
+        var d = JSON.parse(localStorage.getItem('bhLeaderboard'));
+        if (Array.isArray(d) && d.length) return d;
+        if (d && typeof d === 'object') { var a = []; for (var k in d) { if (d.hasOwnProperty(k)) a.push(d[k]); } if (a.length) return a; }
+    } catch(e) {}
     return null;
 }
 function renderLBEditor() {
@@ -224,7 +228,8 @@ renderLBEditor();
         if (x.status === 200) {
             try {
                 var d = JSON.parse(x.responseText);
-                if (d && d.length) {
+                if (Array.isArray(d) && d.length || d && typeof d === 'object') {
+                    if (!Array.isArray(d)) { var a = []; for (var k in d) { if (d.hasOwnProperty(k)) a.push(d[k]); } d = a; }
                     localStorage.setItem('bhLeaderboard', JSON.stringify(d));
                     renderLBEditor();
                 }

@@ -258,7 +258,8 @@ function loadUpdatesFromFB() {
         if (x.status === 200) {
             try {
                 var d = JSON.parse(x.responseText);
-                if (d && d.length) {
+                if (Array.isArray(d) && d.length || d && typeof d === 'object') {
+                    if (!Array.isArray(d)) { var a = []; for (var k in d) { if (d.hasOwnProperty(k)) a.push(d[k]); } d = a; }
                     updatesData = d;
                     try { localStorage.setItem('bhUpdates', JSON.stringify(updatesData)); } catch(e) {}
                     renderAdminList();
