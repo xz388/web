@@ -441,7 +441,7 @@ function loadAndPlay(index, cb) {
     const fail = () => { if (done) return; done = true; audio.removeEventListener('canplaythrough', ok); audio.removeEventListener('error', fail); cb(false); };
     audio.addEventListener('canplaythrough', ok, { once: true });
     audio.addEventListener('error', fail, { once: true });
-    setTimeout(() => { if (!done) { done = true; fail(); } }, 5000);
+    setTimeout(() => { if (!done) { done = true; fail(); } }, 20000);
 }
 function playTrack(index) {
     loadAndPlay(index, success => {
@@ -530,7 +530,12 @@ function startTrackFromSaved() {
             audio.muted = saved.muted || false;
         }
     } catch(e) {}
-    playTrack(1);
+    currentTrack = 1;
+    audio.src = playlist[1].src;
+    audio.load();
+    drawSpectrum();
+    var p = audio.play();
+    if (p) p.then(function() { isPlaying = true; playBtn.textContent = '⏸'; }).catch(function(e) { console.warn('audio play:', e); });
 }
 function initAudio() {
     audio.src = playlist[1].src;
