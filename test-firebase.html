@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><title>Firebase Test</title></head><body>
+<h2>Firebase Data Test</h2>
+<div id="status">Loading...</div>
+<ul id="list"></ul>
+<script>
+(function(){
+  var x = new XMLHttpRequest();
+  x.open('GET', 'https://webb-d05d3-default-rtdb.firebaseio.com/leaderboard.json');
+  x.onload = function() {
+    if (x.status === 200) {
+      try {
+        var d = JSON.parse(x.responseText);
+        document.getElementById('status').textContent = 'OK: '+d.length+' players';
+        var html = '';
+        for(var i=0;i<d.length;i++){
+          html += '<li>'+d[i].name+' (🏆x'+d[i].champion+', ⚽x'+d[i].goals+')</li>';
+        }
+        document.getElementById('list').innerHTML = html;
+      } catch(e) { document.getElementById('status').textContent = 'Parse error: '+e; }
+    } else { document.getElementById('status').textContent = 'Status: '+x.status; }
+  };
+  x.onerror = function() { document.getElementById('status').textContent = 'Network error'; };
+  x.send();
+})();
+</script>
+</body></html>

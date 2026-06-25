@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BrotherHood — Poll Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600;700&family=Playfair+Display:ital@0;1&family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        html, body { height:100%; overflow:hidden; }
+        body {
+            background:#050508; color:#e8e8f0; font-family:'Inter',sans-serif;
+            background-image:
+                radial-gradient(ellipse at 15% 20%, rgba(255,215,0,0.05) 0%, transparent 60%),
+                radial-gradient(ellipse at 85% 80%, rgba(180,120,20,0.03) 0%, transparent 60%);
+        }
+        .scanline {
+            position:fixed; inset:0; pointer-events:none; z-index:9999;
+            background:repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.008) 2px, rgba(255,255,255,0.008) 4px);
+        }
+        .page {
+            width:100%; height:100vh; overflow:hidden;
+            background:linear-gradient(165deg,#0a0a18 0%,#060610 40%,#0c0c1a 100%);
+            display:flex; align-items:center; justify-content:center; padding:0 60px; position:relative;
+        }
+        .page::before {
+            content:''; position:absolute; top:-60%; left:-50%; width:200%; height:200%;
+            background:conic-gradient(from 30deg at 50% 50%, transparent 0%, rgba(255,215,0,0.015) 25%, rgba(180,120,20,0.01) 35%, transparent 50%, rgba(255,215,0,0.008) 75%, transparent 100%);
+            animation:spin 30s linear infinite; pointer-events:none;
+        }
+        @keyframes spin { 100% { transform:rotate(360deg); } }
+        .page::after {
+            content:''; position:absolute; inset:0;
+            background:radial-gradient(ellipse at 50% 0%, rgba(255,215,0,0.06) 0%, transparent 50%);
+            pointer-events:none;
+        }
+        .inner {
+            position:relative; z-index:1;
+            width:100%; max-width:900px; max-height:100vh; display:flex; flex-direction:column;
+        }
+        .top {
+            display:flex; align-items:center; gap:16px; margin-bottom:22px; flex-shrink:0;
+            padding:14px 22px; border-radius:16px;
+            background:rgba(255,255,255,0.02); border:1px solid rgba(255,215,0,0.06);
+            backdrop-filter:blur(16px); position:relative; overflow:hidden;
+            animation:fadeDown 0.4s ease both;
+        }
+        @keyframes fadeDown { from { opacity:0; transform:translateY(-10px); } to { opacity:1; transform:translateY(0); } }
+        .top::before {
+            content:''; position:absolute; top:0; left:0; right:0; height:1px;
+            background:linear-gradient(90deg, transparent, rgba(255,215,0,0.2), transparent);
+        }
+        .top a {
+            color:#5555aa; text-decoration:none; font-size:0.6rem; transition:0.3s;
+            letter-spacing:2px; display:flex; align-items:center; gap:6px;
+            padding:7px 12px; border-radius:8px; background:rgba(255,255,255,0.02);
+            border:1px solid rgba(255,255,255,0.03); font-weight:600;
+        }
+        .top a:hover { color:#ffd700; background:rgba(255,215,0,0.04); border-color:rgba(255,215,0,0.08); }
+        .top .title-group { flex:1; text-align:center; }
+        .top .title-group h1 {
+            font-family:'Orbitron',monospace; font-size:0.85rem; color:#ffd700;
+            letter-spacing:4px; text-shadow:0 0 30px rgba(255,215,0,0.08);
+        }
+        .top .title-group span {
+            display:block; font-family:'Playfair Display',serif; font-style:italic;
+            font-size:0.55rem; color:#555599; letter-spacing:5px; font-weight:400; margin-top:3px;
+        }
+        .form-scroll {
+            flex:1; overflow-y:auto; min-height:0; padding:4px 6px 4px 0;
+        }
+        .form-scroll::-webkit-scrollbar { width:3px; }
+        .form-scroll::-webkit-scrollbar-track { background:transparent; }
+        .form-scroll::-webkit-scrollbar-thumb { background:rgba(255,215,0,0.08); border-radius:10px; }
+        .fade-group { animation:fadeUp 0.5s ease both; }
+        .fade-group:nth-child(1) { animation-delay:0.05s; }
+        .fade-group:nth-child(2) { animation-delay:0.10s; }
+        .fade-group:nth-child(3) { animation-delay:0.15s; }
+        .fade-group:nth-child(4) { animation-delay:0.20s; }
+        .fade-group:nth-child(5) { animation-delay:0.25s; }
+        @keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+        .field-wrap { margin-bottom:14px; }
+        .field-wrap label {
+            display:block; font-size:0.5rem; color:#5555aa;
+            letter-spacing:2.5px; margin-bottom:6px; text-transform:uppercase; font-weight:600;
+        }
+        .field-wrap input {
+            width:100%; padding:11px 16px; border-radius:10px;
+            border:1px solid rgba(255,255,255,0.03);
+            background:rgba(255,255,255,0.01);
+            color:#ddd; font-size:0.82rem; outline:none;
+            font-family:'Inter',sans-serif; transition:all 0.3s;
+        }
+        .field-wrap input:focus {
+            border-color:rgba(255,215,0,0.2);
+            background:rgba(255,215,0,0.015);
+            box-shadow:0 0 30px rgba(255,215,0,0.04), inset 0 0 20px rgba(255,215,0,0.01);
+        }
+        input[type="datetime-local"] { color-scheme:dark; }
+        .row { display:flex; gap:16px; }
+        .row > * { flex:1; }
+        .dur-btn.selected { border-color:rgba(255,215,0,0.3) !important; color:#ffd700 !important; background:rgba(255,215,0,0.06) !important; box-shadow:0 0 20px rgba(255,215,0,0.05) !important; }
+        .opt-row { display:flex; align-items:center; gap:8px; margin-bottom:6px; }
+        .opt-row input { flex:1; padding:10px 12px; border-radius:10px; border:1px solid rgba(255,255,255,0.03); background:rgba(255,255,255,0.01); color:#ddd; font-size:0.8rem; outline:none; font-family:'Inter',sans-serif; transition:all 0.3s; }
+        .opt-row input:focus { border-color:rgba(255,215,0,0.2); background:rgba(255,215,0,0.015); }
+        .opt-rm { background:none; border:1px solid rgba(255,50,50,0.08); color:#ff4444; cursor:pointer; font-size:0.55rem; padding:6px 10px; border-radius:8px; transition:0.3s; font-weight:600; flex-shrink:0; }
+        .opt-rm:hover { background:rgba(255,50,50,0.1); border-color:rgba(255,50,50,0.15); }
+        .btn {
+            padding:13px 22px; border:none; border-radius:12px; cursor:pointer;
+            font-weight:700; font-size:0.65rem; letter-spacing:3px; text-transform:uppercase;
+            width:100%; transition:all 0.4s cubic-bezier(0.175,0.885,0.32,1.275);
+            position:relative; overflow:hidden;
+        }
+        .btn-gold {
+            background:linear-gradient(135deg,#ffd700,#b8860b,#ffd700);
+            background-size:200% 200%;
+            color:#050508; animation:shimmer 4s ease infinite;
+        }
+        @keyframes shimmer { 0%,100% { background-position:0% 50%; } 50% { background-position:100% 50%; } }
+        .btn-gold:hover { transform:translateY(-2px) scale(1.01); box-shadow:0 10px 40px rgba(255,215,0,0.15); }
+        .btn-red {
+            background:rgba(255,50,50,0.06); color:#ff5555;
+            border:1px solid rgba(255,50,50,0.05); margin-top:6px;
+        }
+        .btn-red:hover { background:rgba(255,50,50,0.12); border-color:rgba(255,50,50,0.1); transform:translateY(-1px); }
+        hr { border:none; height:1px; background:linear-gradient(90deg, transparent, rgba(255,215,0,0.06), transparent); margin:14px 0; flex-shrink:0; }
+        .note { text-align:center; font-size:0.5rem; color:#5555aa; margin:6px 0; flex-shrink:0; letter-spacing:1px; }
+        .upd-item {
+            display:flex; align-items:center; gap:10px; padding:10px 14px; margin-bottom:6px;
+            border-radius:12px; background:rgba(255,255,255,0.01); border:1px solid rgba(255,255,255,0.02);
+            font-size:0.7rem;
+        }
+        .upd-item .info { flex:1; overflow:hidden; }
+        .upd-item .info .t { font-weight:600; color:#ddd; font-size:0.78rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .upd-item .info .d { font-size:0.55rem; color:#5555aa; margin-top:2px; }
+        .music-bar {
+            flex-shrink:0; margin-top:14px;
+            padding:12px 18px; border-radius:14px;
+            border:1px solid rgba(255,215,0,0.06);
+            background:rgba(255,255,255,0.015);
+            backdrop-filter:blur(14px);
+            display:flex; align-items:center; gap:12px;
+            position:relative; overflow:hidden;
+            animation:fadeUp 0.5s ease 0.30s both;
+        }
+        .music-bar::before {
+            content:''; position:absolute; bottom:0; left:10%; right:10%; height:1px;
+            background:linear-gradient(90deg, transparent, rgba(255,215,0,0.08), transparent);
+        }
+        .music-bar .info { flex:1; overflow:hidden; }
+        .music-bar .info .track-name { font-size:0.65rem; color:#9999bb; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-weight:400; }
+        .music-bar .info .track-status { font-size:0.5rem; color:#5555aa; margin-top:2px; }
+        .music-bar .ctrl {
+            background:none; border:1px solid rgba(255,215,0,0.06);
+            color:#ffd700; cursor:pointer; font-size:0.9rem;
+            width:32px; height:32px; border-radius:9px;
+            display:flex; align-items:center; justify-content:center;
+            transition:all 0.3s; flex-shrink:0;
+        }
+        .music-bar .ctrl:hover { background:rgba(255,215,0,0.08); border-color:rgba(255,215,0,0.15); transform:scale(1.08); }
+        .music-bar .ctrl.vol { color:#6666aa; border-color:rgba(255,255,255,0.04); }
+        .music-bar .ctrl.vol:hover { color:#ffd700; }
+        @media (max-width:700px) {
+            .page { padding:0 16px; }
+            .top { padding:10px 14px; gap:8px; flex-wrap:wrap; justify-content:center; }
+            .top .title-group { order:-1; width:100%; }
+            .row { flex-direction:column; gap:0; }
+            .field-wrap { margin-bottom:10px; }
+        }
+    </style>
+</head>
+<body>
+<div class="scanline"></div>
+<div class="page">
+    <div class="inner">
+        <div class="top">
+            <a href="admin.html">← Dashboard</a>
+            <div class="title-group">
+                <h1>✦ Poll Manager ✦</h1>
+                <span>Create and manage votes</span>
+            </div>
+        </div>
+        <div class="form-scroll">
+            <div id="pollStatus"></div>
+            <div class="fade-group">
+                <div class="row">
+                    <div class="field-wrap"><label>Question <span style="color:#5555aa;font-weight:400;text-transform:none;letter-spacing:0">(EN)</span></label><input type="text" id="pollQuestion" placeholder="e.g. Should we add a game night?" /></div>
+                    <div class="field-wrap"><label>السؤال <span style="color:#5555aa;font-weight:400;text-transform:none;letter-spacing:0">(AR)</span></label><input type="text" id="pollQuestionAr" placeholder="مثال: هل نضيف ليلة ألعاب؟" /></div>
+                </div>
+            </div>
+            <div class="fade-group">
+    <div class="field-wrap">
+        <label>Poll Type</label>
+        <div style="display:flex;gap:8px;">
+            <button class="type-btn selected" data-type="yesno" style="flex:1;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);background:rgba(255,255,255,0.01);color:#8888aa;font-size:0.6rem;cursor:pointer;transition:0.3s;font-weight:600;letter-spacing:1px;text-transform:uppercase">✅ Yes / No</button>
+            <button class="type-btn" data-type="custom" style="flex:1;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);background:rgba(255,255,255,0.01);color:#8888aa;font-size:0.6rem;cursor:pointer;transition:0.3s;font-weight:600;letter-spacing:1px;text-transform:uppercase">📝 Custom Options</button>
+        </div>
+    </div>
+</div>
+            <div class="fade-group">
+                <div class="field-wrap">
+                    <label>Duration</label>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                        <button class="dur-btn" data-dur="3600000" style="flex:1;min-width:70px;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);background:rgba(255,255,255,0.01);color:#8888aa;font-size:0.6rem;cursor:pointer;transition:0.3s;font-weight:600;letter-spacing:1px;text-transform:uppercase">1h</button>
+                        <button class="dur-btn" data-dur="14400000" style="flex:1;min-width:70px;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);background:rgba(255,255,255,0.01);color:#8888aa;font-size:0.6rem;cursor:pointer;transition:0.3s;font-weight:600;letter-spacing:1px;text-transform:uppercase">4h</button>
+                        <button class="dur-btn" data-dur="28800000" style="flex:1;min-width:70px;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);background:rgba(255,255,255,0.01);color:#8888aa;font-size:0.6rem;cursor:pointer;transition:0.3s;font-weight:600;letter-spacing:1px;text-transform:uppercase">8h</button>
+                        <button class="dur-btn" data-dur="86400000" style="flex:1;min-width:70px;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);background:rgba(255,255,255,0.01);color:#8888aa;font-size:0.6rem;cursor:pointer;transition:0.3s;font-weight:600;letter-spacing:1px;text-transform:uppercase">24h</button>
+                        <button class="dur-btn" data-dur="custom" style="flex:1;min-width:70px;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);background:rgba(255,255,255,0.01);color:#8888aa;font-size:0.6rem;cursor:pointer;transition:0.3s;font-weight:600;letter-spacing:1px;text-transform:uppercase">Custom</button>
+                    </div>
+                </div>
+            </div>
+            <div class="fade-group"><input type="datetime-local" id="pollCustomDate" style="display:none" /></div>
+            <div id="pollOptionsContainer" style="display:none;margin-bottom:14px">
+                <div class="field-wrap"><label>Options</label></div>
+                <div id="pollOptionsList"></div>
+                <button id="pollAddOption" style="width:100%;padding:10px;border-radius:10px;border:1px dashed rgba(255,215,0,0.15);background:transparent;color:#ffd700;font-size:0.6rem;cursor:pointer;transition:0.3s;font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-top:6px">+ Add Option</button>
+            </div>
+            <div id="pollTimerDisplay" style="text-align:center;font-size:0.9rem;color:#ffd700;margin-bottom:10px;display:none"></div>
+            <div class="fade-group"><button class="btn btn-gold" id="pollStart">Start Poll</button></div>
+            <div class="fade-group"><button class="btn btn-red" id="pollEnd" style="display:none">End Poll</button></div>
+            <hr />
+            <div id="pollResults"></div>
+        </div>
+        <div class="music-bar">
+            <button class="ctrl" id="abPlay">▶</button>
+            <div class="info">
+                <div class="track-name" id="abTrack">No track</div>
+                <div class="track-status" id="abStatus">—</div>
+            </div>
+            <button class="ctrl vol" id="abVol">♫</button>
+        </div>
+    </div>
+</div>
+<script>
+const FB_URL = 'https://webb-d05d3-default-rtdb.firebaseio.com';
+const WH_URL = 'https://discord.com/api/webhooks/1511811919693221918/V6c6tcZyavGub4RiBLQAxZRa1It5DX2sbE7Zzyux2_VriADctCR7aqnu1jSWvRaQFdTw';
+const SITE_URL = 'https://xz388.github.io/web/';
+const WH_MATCH = WH_URL.match(/webhooks\/(\d+)\/([^/]+)/);
+const WH_ID = WH_MATCH ? WH_MATCH[1] : '';
+const WH_TOKEN = WH_MATCH ? WH_MATCH[2] : '';
+let pollTimer = null;
+let _pollCache = null;
+let pollType = 'yesno';
+function getPoll() { return _pollCache; }
+function setPoll(p) { _pollCache = p; syncPollToFB(p); }
+function syncPollToFB(p) {
+  var x = new XMLHttpRequest();
+  if (p) { x.open('PUT', FB_URL+'/polls/current.json'); x.setRequestHeader('Content-Type','application/json'); x.send(JSON.stringify(p)); }
+  else { x.open('DELETE', FB_URL+'/polls/current.json'); x.send(); }
+}
+function loadPollFromFB(cb) {
+  var x = new XMLHttpRequest();
+  x.open('GET', FB_URL+'/polls/current.json');
+  x.onload = function() { try { _pollCache = JSON.parse(x.responseText); } catch(e) { _pollCache = null; } if (cb) cb(_pollCache); renderPollAdmin(); };
+  x.onerror = function() { _pollCache = null; if (cb) cb(null); renderPollAdmin(); };
+  x.send();
+}
+function fmtRemaining(ms) {
+    if (ms <= 0) return '0m';
+    const h = Math.floor(ms / 3600000);
+    const m = Math.floor((ms % 3600000) / 60000);
+    if (h > 0) return h+'h '+m+'m';
+    return m+'m';
+}
+function fmtRemainingAr(ms) {
+    if (ms <= 0) return '٠د';
+    const h = Math.floor(ms / 3600000);
+    const m = Math.floor((ms % 3600000) / 60000);
+    if (h > 0) return h+'س '+m+'د';
+    return m+'د';
+}
+var WHITE = 16777215;
+function dcSend(payload) {
+    return fetch(WH_URL, { method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify(payload) }).then(r => r.json()).catch(function(){});
+}
+function dcEdit(msgId, payload) {
+    if (!WH_ID || !WH_TOKEN || !msgId) return;
+    fetch('https://discord.com/api/webhooks/'+WH_ID+'/'+WH_TOKEN+'/messages/'+msgId, { method:'PATCH', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify(payload) }).catch(function(){});
+}
+function embedStart(p, remaining) {
+    const r = fmtRemaining(remaining);
+    if (p.type === 'custom' && p.options) {
+        var optsList = p.options.map(function(o,i){ return '**'+(i+1)+'. '+o.label+'**'; }).join('\n');
+        return { content: '||@everyone||', embeds: [{ description: '🗳️ **New Poll | تصويت جديد : **\n\n**'+p.q+'**\n\n**Options | الخيارات :**\n'+optsList+'\n\n⏳ **'+r+'**\n\n**[ Click here to vote | اضغط هنا للتصويت ]('+SITE_URL+')**', color: WHITE }] };
+    }
+    return { content: '||@everyone||', embeds: [{ description: '🗳️ **New Poll | تصويت جديد : **\n\n**'+p.q+'**\n\n⏳ **Voting duration | مدة التصويت :**\n**'+r+'**\n\n**[ Click here to vote | اضغط هنا للتصويت ]('+SITE_URL+')**', color: WHITE }] };
+}
+function embedEnd(p) {
+    if (p.type === 'custom' && p.options) {
+        var best = -1, bestIdx = -1, tied = false;
+        p.options.forEach(function(o,i){ if(o.count > best) { best = o.count; bestIdx = i; tied = false; } else if(o.count === best) tied = true; });
+        var winnerText = tied ? '**Tie | تعادل**' : '**'+p.options[bestIdx].label+'** 🏆';
+        var resultsList = p.options.map(function(o,i){ return (i+1)+'. '+o.label+' — **'+o.count+'** vote'+(o.count!==1?'s':''); }).join('\n');
+        return { content: '||@everyone||', embeds: [{ description: '📊 **Poll Ended | انتهى التصويت : **\n\n**'+p.q+'**\n\n**Results | النتائج :**\n'+resultsList+'\n\n🏆 **Winner | الفائز : **\n'+winnerText+'\n\n**[ Click here to view | اضغط هنا]('+SITE_URL+')**', color: WHITE }] };
+    }
+    var winnerText = (p.yes||0) > (p.no||0) ? '✅ Yes' : (p.yes||0) < (p.no||0) ? '❌ No' : '**Tie | تعادل**';
+    return { content: '||@everyone||', embeds: [{ description: '📊 **Poll Ended | انتهى التصويت : **\n\n**'+p.q+'**\n\n✅ **Yes : '+(p.yes||0)+'**\n❌ **No : '+(p.no||0)+'**\n\n🏆 **Winner | الفائز : **\n\n**'+winnerText+'**\n\n**[ Click here to view vote | اضغط هنا لرؤية التصويت]('+SITE_URL+')**', color: WHITE }] };
+}
+function embedUpdate(p, remaining) {
+    const r = fmtRemaining(remaining);
+    if (p.type === 'custom' && p.options) {
+        var optsList = p.options.map(function(o,i){ return '**'+(i+1)+'. '+o.label+'** — '+o.count+' vote'+(o.count!==1?'s':''); }).join('\n');
+        return { embeds: [{ description: '🗳️ **New Poll | تصويت جديد : **\n\n**'+p.q+'**\n\n**Current Results | النتائج الحالية :**\n'+optsList+'\n\n⏳ **'+r+'**\n\n**[ Click here to vote | اضغط هنا للتصويت ]('+SITE_URL+')**', color: WHITE }] };
+    }
+    return { embeds: [{ description: '🗳️ **New Poll | تصويت جديد : **\n\n**'+p.q+'**\n\n⏳ **Voting duration | مدة التصويت :**\n**'+r+'**\n\n**[ Click here to vote | اضغط هنا للتصويت ]('+SITE_URL+')**', color: WHITE }] };
+}
+function getRemaining(p) {
+    if (!p) return 0;
+    if (p.endAt) return Math.max(0, p.endAt - Date.now());
+    return p.duration || 0;
+}
+function renderOptions() {
+    const container = document.getElementById('pollOptionsList');
+    const rows = container.querySelectorAll('.opt-row');
+    const count = rows.length || 2;
+    container.innerHTML = '';
+    for (let i = 0; i < count; i++) {
+        const div = document.createElement('div');
+        div.className = 'opt-row';
+        div.innerHTML = '<input type="text" class="opt-input" placeholder="Option '+(i+1)+'" />'+(count>2?'<button class="opt-rm" onclick="this.parentElement.remove()">✕</button>':'');
+        container.appendChild(div);
+    }
+}
+function renderPollAdmin() {
+    const p = getPoll();
+    const status = document.getElementById('pollStatus');
+    const startBtn = document.getElementById('pollStart');
+    const endBtn = document.getElementById('pollEnd');
+    const results = document.getElementById('pollResults');
+    const td = document.getElementById('pollTimerDisplay');
+    if (p && p.active) {
+        const rem = getRemaining(p);
+        var infoLine;
+        if (p.type === 'custom' && p.options) {
+            infoLine = p.options.map(function(o,i){ return (i+1)+'. '+o.label+': '+o.count; }).join(' · ');
+        } else {
+            infoLine = '✅ '+p.yes+' · ❌ '+p.no;
+        }
+        status.innerHTML = '<div class="upd-item" style="border-color:rgba(255,215,0,0.08)"><span style="color:#ffd700;font-size:0.7rem">● Live</span><div class="info"><div class="t">'+p.q+'</div><div class="d">'+infoLine+' · ⏳ '+fmtRemaining(rem)+'</div></div></div>';
+        td.style.display = ''; td.textContent = '⏳ Remaining: '+fmtRemaining(rem)+' | الوقت المتبقي: '+fmtRemainingAr(rem);
+        startBtn.style.display = 'none'; endBtn.style.display = ''; results.innerHTML = '';
+    } else if (p && p.ended) {
+        var winner, infoLine;
+        if (p.type === 'custom' && p.options) {
+            var best = -1, bestIdx = -1, tied = false;
+            p.options.forEach(function(o,i){ if(o.count > best) { best = o.count; bestIdx = i; tied = false; } else if(o.count === best) tied = true; });
+            winner = tied ? '⚖️ Tie' : '🏆 '+p.options[bestIdx].label;
+            infoLine = p.options.map(function(o,i){ return (i+1)+'. '+o.label+': '+o.count; }).join(' · ');
+        } else {
+            winner = (p.yes||0) > (p.no||0) ? '✅ Yes' : (p.yes||0) < (p.no||0) ? '❌ No' : '⚖️ Tie';
+            infoLine = '✅ '+p.yes+' · ❌ '+p.no;
+        }
+        status.innerHTML = '<div class="upd-item"><span style="color:#5555aa;font-size:0.7rem">Ended</span><div class="info"><div class="t">'+p.q+'</div><div class="d">'+infoLine+' · '+winner+'</div></div></div>';
+        td.style.display = 'none';
+        startBtn.style.display = ''; startBtn.textContent = 'New Poll'; endBtn.style.display = 'none'; results.innerHTML = '';
+    } else {
+        status.innerHTML = ''; td.style.display = 'none';
+        startBtn.style.display = ''; startBtn.textContent = 'Start Poll'; endBtn.style.display = 'none';
+        results.innerHTML = '<div class="note">No active poll. Create one above.</div>';
+    }
+}
+function autoEndPoll() {
+    const p = getPoll();
+    if (!p || !p.active) return;
+    p.active = false; p.ended = true; setPoll(p);
+    if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+    renderPollAdmin();
+    if (p.msgId) dcSend(embedEnd(p)).then(function(r) { if (r && r.id) { dcEdit(p.msgId, embedEnd(p)); } });
+    else dcSend(embedEnd(p));
+}
+function startPollTimer() {
+    if (pollTimer) clearInterval(pollTimer);
+    pollTimer = setInterval(function() {
+        const p = getPoll();
+        if (!p || !p.active) { clearInterval(pollTimer); pollTimer = null; return; }
+        const rem = getRemaining(p);
+        if (rem <= 0) { autoEndPoll(); return; }
+        renderPollAdmin();
+        if (p.msgId) dcEdit(p.msgId, embedUpdate(p, rem));
+    }, 60000);
+}
+let selectedDur = 3600000;
+document.querySelectorAll('.dur-btn').forEach(function(b) {
+    b.addEventListener('click', function() {
+        document.querySelectorAll('.dur-btn').forEach(function(x) { x.classList.remove('selected'); });
+        this.classList.add('selected');
+        const v = this.dataset.dur;
+        if (v === 'custom') { selectedDur = null; document.getElementById('pollCustomDate').style.display = ''; }
+        else { selectedDur = parseInt(v); document.getElementById('pollCustomDate').style.display = 'none'; }
+    });
+});
+document.querySelector('.dur-btn[data-dur="3600000"]').classList.add('selected');
+document.querySelectorAll('.type-btn').forEach(function(b) {
+    b.addEventListener('click', function() {
+        document.querySelectorAll('.type-btn').forEach(function(x) { x.classList.remove('selected'); });
+        this.classList.add('selected');
+        pollType = this.dataset.type;
+        document.getElementById('pollOptionsContainer').style.display = pollType === 'custom' ? '' : 'none';
+        if (pollType === 'custom') renderOptions();
+    });
+});
+document.getElementById('pollAddOption').addEventListener('click', function() {
+    const container = document.getElementById('pollOptionsList');
+    const div = document.createElement('div');
+    div.className = 'opt-row';
+    const idx = container.querySelectorAll('.opt-row').length + 1;
+    div.innerHTML = '<input type="text" class="opt-input" placeholder="Option '+(idx)+'" /><button class="opt-rm" onclick="this.parentElement.remove()">✕</button>';
+    container.appendChild(div);
+});
+document.getElementById('pollStart').addEventListener('click', function() {
+    const q = document.getElementById('pollQuestion').value.trim();
+    const qAr = document.getElementById('pollQuestionAr').value.trim();
+    if (!q) return;
+    const existing = getPoll();
+    if (existing && existing.active) return;
+    let endAt;
+    if (selectedDur) { endAt = Date.now() + selectedDur; }
+    else {
+        const val = document.getElementById('pollCustomDate').value;
+        if (!val) return;
+        endAt = new Date(val).getTime();
+        if (endAt <= Date.now()) return;
+    }
+    var poll;
+    if (pollType === 'custom') {
+        var opts = [];
+        document.querySelectorAll('#pollOptionsList .opt-row').forEach(function(row) {
+            var val = row.querySelector('.opt-input').value.trim();
+            if (val) opts.push({ label: val, count: 0 });
+        });
+        if (opts.length < 2) { alert('Add at least 2 options'); return; }
+        poll = { type: 'custom', q, qAr, options: opts, active: true, ended: false, votes: {}, endAt, msgId: null };
+    } else {
+        poll = { q, qAr, yes: 0, no: 0, active: true, ended: false, votes: {}, endAt, msgId: null };
+    }
+    setPoll(poll);
+    try { localStorage.removeItem('bhPollVoted'); } catch(e) {}
+    document.getElementById('pollQuestion').value = ''; document.getElementById('pollQuestionAr').value = '';
+    renderPollAdmin(); startPollTimer(); setPoll(poll);
+    const rem = getRemaining(poll);
+    dcSend(embedStart(poll, rem)).then(function(r) { if (r && r.id) { poll.msgId = r.id; setPoll(poll); } });
+});
+document.getElementById('pollEnd').addEventListener('click', function() {
+    const p = getPoll();
+    if (!p || !p.active) return;
+    if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+    p.active = false; p.ended = true; setPoll(p); renderPollAdmin();
+    dcSend(embedEnd(p)).then(function(r) { if (r && r.id && p.msgId) { dcEdit(p.msgId, embedEnd(p)); } });
+});
+loadPollFromFB(function(p) {
+    if (p && p.active) {
+        if (getRemaining(p) <= 0) { autoEndPoll(); }
+        else { startPollTimer(); renderPollAdmin(); }
+    }
+});
+try { localStorage.setItem('bhFromInternal', '1'); } catch(e) {}
+var abPlay = document.getElementById('abPlay'), abTrack = document.getElementById('abTrack'), abStatus = document.getElementById('abStatus'), abVol = document.getElementById('abVol');
+var aa = new Audio(); aa.volume = 0.05;
+try {
+    var s = JSON.parse(localStorage.getItem('bhAudio'));
+    if (s && s.src) {
+        aa.src = s.src;
+        if (s.ct > 0) aa.currentTime = s.ct;
+        aa.volume = s.vol || 0.05; aa.muted = s.muted || false;
+        if (s.playing) aa.play().catch(function(){});
+        abTrack.textContent = decodeURIComponent(s.src.split('/').pop().replace(/%20/g,' ')).replace(/\.mp3$/,'');
+        abPlay.textContent = s.playing ? '⏸' : '▶';
+    }
+} catch(e) {}
+function as() { try { localStorage.setItem('bhAudio',JSON.stringify({src:aa.src,ct:aa.currentTime,cur:0,vol:aa.volume,playing:!aa.paused,muted:aa.muted})); } catch(e) {} }
+aa.addEventListener('play', function(){ abPlay.textContent='⏸'; abStatus.textContent='Playing'; as(); });
+aa.addEventListener('pause', function(){ abPlay.textContent='▶'; abStatus.textContent='Paused'; as(); });
+aa.addEventListener('timeupdate', as);
+abPlay.addEventListener('click', function(){ if(aa.src){ if(aa.paused) aa.play().catch(function(){}); else aa.pause(); }});
+abVol.addEventListener('click', function(){ aa.muted=!aa.muted; abVol.textContent=aa.muted?'♪':'♫'; as(); });
+setInterval(function(){ if(!aa.paused&&aa.duration) abStatus.textContent=(aa.currentTime/aa.duration*100).toFixed(0)+'%'; },2000);
+</script>
+</body>
+</html>
