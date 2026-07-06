@@ -29,7 +29,11 @@
 /* ===== MENU OVERLAY (slides from left) ===== */
 .menu-backdrop{position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:998;background:rgba(0,0,0,0.5);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:.4s}
 .menu-backdrop.show{opacity:1;pointer-events:auto}
-.menu-overlay{position:fixed;top:0;left:-75%;width:75%;max-width:320px;min-width:240px;height:100vh;z-index:999;background:rgba(8,8,20,0.97);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);border-right:1px solid rgba(255,255,255,0.04);transition:.45s cubic-bezier(.22,1,.36,1);padding:68px 16px 20px;overflow-y:auto}
+.menu-overlay{position:fixed;top:0;left:-75%;width:75%;max-width:320px;min-width:240px;height:100vh;z-index:999;background:linear-gradient(170deg,rgba(8,8,22,0.98),rgba(15,10,30,0.97));-webkit-backdrop-filter:blur(28px);backdrop-filter:blur(28px);border-right:1px solid rgba(255,255,255,0.03);transition:.45s cubic-bezier(.22,1,.36,1);padding:68px 16px 20px;overflow-y:auto}
+.menu-overlay::before{content:'';position:fixed;top:-50%;right:-50%;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(255,215,0,0.04),transparent 60%);pointer-events:none;z-index:-1;animation:menuGlow 6s ease-in-out infinite alternate}
+.menu-overlay::after{content:'';position:fixed;bottom:-30%;left:-30%;width:250px;height:250px;border-radius:50%;background:radial-gradient(circle,rgba(100,50,255,0.03),transparent 60%);pointer-events:none;z-index:-1;animation:menuGlow2 8s ease-in-out infinite alternate}
+@keyframes menuGlow{0%{transform:translate(0,0) scale(1)}100%{transform:translate(-30px,30px) scale(1.2)}}
+@keyframes menuGlow2{0%{transform:translate(0,0) scale(1)}100%{transform:translate(40px,-20px) scale(1.3)}}
 .menu-overlay.open{left:0}
 .menu-header{font-size:0.4rem;letter-spacing:3px;text-transform:uppercase;color:#454560;padding:0 12px 16px;font-weight:700}
 .menu-item{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:10px;color:#707090;text-decoration:none;font-size:0.55rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:.3s;border:none;background:none;width:100%;text-align:left;font-family:'Inter',sans-serif;position:relative;overflow:hidden}
@@ -266,10 +270,10 @@ canvas{position:absolute;inset:0;pointer-events:none;z-index:0}
             <span></span><span></span><span></span>
         </div>
         <div class="nav-center">
-            <a href="index.html" class="nav-btn">Home</a>
-            <a href="leaderboard.html" class="nav-btn">Leaderboard</a>
-            <a href="server-status.html" class="nav-btn">Server</a>
-            <a href="world-records.html" class="nav-btn active">World Records</a>
+            <a href="index.html" class="nav-btn" data-i18n="navHome">Home</a>
+            <a href="leaderboard.html" class="nav-btn" data-i18n="navLeaderboard">Leaderboard</a>
+            <a href="world-records.html" class="nav-btn active" data-i18n="navWorldRecords">World Records</a>
+            <a href="server-status.html" class="nav-btn" data-i18n="navServer">Server</a>
         </div>
         <button class="lang-btn" onclick="toggleLang()" title="Language">🌐</button>
     </div>
@@ -277,10 +281,10 @@ canvas{position:absolute;inset:0;pointer-events:none;z-index:0}
 <div class="menu-backdrop" id="menuBackdrop" onclick="closeMenu()"></div>
 <div class="menu-overlay" id="menuOverlay">
     <div class="menu-header">Navigate</div>
-    <a href="world-records.html" class="menu-item"><span class="icon">🏆</span> World Records</a>
-    <a href="archive.html" class="menu-item"><span class="icon">📦</span> Archive</a>
+    <a href="world-records.html" class="menu-item" data-i18n="menuWorldRecords"><span class="icon">🏆</span> <span class="text">World Records</span></a>
+    <a href="archive.html" class="menu-item" data-i18n="menuArchive"><span class="icon">📦</span> <span class="text">Archive</span></a>
     <div class="menu-divider"></div>
-    <button class="menu-item" onclick="toggleLang()"><span class="icon">🌐</span> Language</button>
+    <button class="menu-item" onclick="toggleLang()" data-i18n="menuLanguage"><span class="icon">🌐</span> <span class="text">Language</span></button>
 </div>
 <!-- Tap Overlay -->
 <div id="tapOverlay" onclick="this.classList.add('hidden')">
@@ -353,21 +357,49 @@ function calcRecords(data){
   });
   return recs;
 }
+var lang = {
+    en: {
+        noData: 'No data',
+        tied: 'Tied: ',
+        loading: 'Loading...',
+        fetching: 'Fetching data...',
+        navHome: 'Home',
+        navLeaderboard: 'Leaderboard',
+        navServer: 'Server',
+        navWorldRecords: 'World Records',
+        menuWorldRecords: 'World Records',
+        menuArchive: 'Archive',
+        menuLanguage: 'Language'
+    },
+    ar: {
+        noData: 'لا توجد بيانات',
+        tied: 'تعادل: ',
+        loading: 'جاري التحميل...',
+        fetching: 'جلب البيانات...',
+        navHome: 'الرئيسية',
+        navLeaderboard: 'المتصدرين',
+        navServer: 'السيرفر',
+        navWorldRecords: 'سجلات العالم',
+        menuWorldRecords: 'سجلات العالم',
+        menuArchive: 'الأرشيف',
+        menuLanguage: 'اللغة'
+    }
+};
 var currentLang = localStorage.getItem('bhLang') || 'en';
 function render(){
   var data=gd(),rg=document.getElementById('rg');
+  var isAr=currentLang==='ar',l=isAr?lang.ar:lang.en;
   if(!data||!data.length){
-    rg.innerHTML='<div class="emp"><span class="bg">⏳</span><div class="tx">Loading...</div><div class="sx">Fetching data...</div></div>';
+    rg.innerHTML='<div class="emp"><span class="bg">⏳</span><div class="tx">'+l.loading+'</div><div class="sx">'+l.fetching+'</div></div>';
     return;
   }
-  var isAr=currentLang==='ar';
   var recs=calcRecords(data);
   rg.innerHTML=CATS.map(function(c,i){
     var r=recs[c.key];
-    if(!r||r.value===0) return'<div class="rc"><div class="gl"></div><div class="rch"><span class="ic">'+c.icon+'</span><div class="ci"><div class="en">'+(isAr?c.ar:c.en)+'</div></div></div><div class="vl">—</div><div class="pl" style="color:#444488">No data</div><div class="ac">'+(i+1)+'</div></div>';
+    if(!r||r.value===0) return'<div class="rc"><div class="gl"></div><div class="rch"><span class="ic">'+c.icon+'</span><div class="ci"><div class="en">'+(isAr?c.ar:c.en)+'</div></div></div><div class="vl">—</div><div class="pl" style="color:#444488">'+l.noData+'</div><div class="ac">'+(i+1)+'</div></div>';
     var pNames=r.players.map(function(p){return'<span class="nm">'+p.name+'</span>'+(p.nameAr?' <span style="color:#5555aa;font-size:.7rem">('+p.nameAr+')</span>':'')}).join('<span class="sp"> — </span>');
     var multi=r.players.length>1;
-    return'<div class="rc" style="animation-delay:'+(.05+(i+1)*.07)+'s"><div class="gl"></div><div class="rch"><span class="ic">'+c.icon+'</span><div class="ci"><div class="en">'+(isAr?c.ar:c.en)+'</div></div></div><div class="vl">'+r.value+'</div><div class="pl">'+(multi?'Tied: ':'')+pNames+'</div><div class="ac">'+(i+1)+'</div></div>';
+    return'<div class="rc" style="animation-delay:'+(.05+(i+1)*.07)+'s"><div class="gl"></div><div class="rch"><span class="ic">'+c.icon+'</span><div class="ci"><div class="en">'+(isAr?c.ar:c.en)+'</div></div></div><div class="vl">'+r.value+'</div><div class="pl">'+(multi?l.tied:'')+pNames+'</div><div class="ac">'+(i+1)+'</div></div>';
   }).join('');
 }
 render();
@@ -610,7 +642,15 @@ document.getElementById('tapOverlay').addEventListener('click', function() {
         repeatBtn.classList.toggle('active', isRepeating);
         startTrackFromSaved();
     });
+    });
+// store original text for nav/menu
+(function(){
+document.querySelectorAll('[data-i18n]').forEach(function(el) {
+    var textSpan = el.querySelector('.text');
+    if (textSpan) textSpan.setAttribute('data-i18n-orig', textSpan.textContent);
+    else el.setAttribute('data-i18n-orig', el.textContent);
 });
+})();
 </script>
 <script>
 function toggleMenu() {
@@ -632,7 +672,22 @@ function toggleLang() {
     closeMenu();
     currentLang = currentLang === 'en' ? 'ar' : 'en';
     localStorage.setItem('bhLang', currentLang);
+    document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+    applyNavLang();
     render();
+}
+
+function applyNavLang() {
+    var isAr = currentLang === 'ar';
+    var l = isAr ? lang.ar : lang.en;
+    document.querySelectorAll('[data-i18n]').forEach(function(el) {
+        var key = el.dataset.i18n;
+        if (l[key]) {
+            var textSpan = el.querySelector('.text');
+            if (textSpan) textSpan.textContent = l[key];
+            else el.textContent = l[key];
+        }
+    });
 }
 </script>
 </body>

@@ -30,7 +30,12 @@
 .menu-backdrop{position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:998;background:rgba(0,0,0,0.5);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:.4s}
 .menu-backdrop.show{opacity:1;pointer-events:auto}
 .menu-overlay{position:fixed;top:0;left:-75%;width:75%;max-width:320px;min-width:240px;height:100vh;z-index:999;background:rgba(8,8,20,0.97);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);border-right:1px solid rgba(255,255,255,0.04);transition:.45s cubic-bezier(.22,1,.36,1);padding:68px 16px 20px;overflow-y:auto}
+.menu-overlay{background:linear-gradient(170deg,rgba(8,8,22,0.98),rgba(15,10,30,0.97))}
 .menu-overlay.open{left:0}
+.menu-overlay::before{content:'';position:fixed;top:-50%;right:-50%;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(255,215,0,0.04),transparent 60%);pointer-events:none;z-index:-1;animation:menuGlow 6s ease-in-out infinite alternate}
+.menu-overlay::after{content:'';position:fixed;bottom:-30%;left:-30%;width:250px;height:250px;border-radius:50%;background:radial-gradient(circle,rgba(100,50,255,0.03),transparent 60%);pointer-events:none;z-index:-1;animation:menuGlow2 8s ease-in-out infinite alternate}
+@keyframes menuGlow{0%{transform:translate(0,0) scale(1)}100%{transform:translate(-30px,30px) scale(1.2)}}
+@keyframes menuGlow2{0%{transform:translate(0,0) scale(1)}100%{transform:translate(40px,-20px) scale(1.3)}}
 .menu-header{font-size:0.4rem;letter-spacing:3px;text-transform:uppercase;color:#454560;padding:0 12px 16px;font-weight:700}
 .menu-item{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:10px;color:#707090;text-decoration:none;font-size:0.55rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:.3s;border:none;background:none;width:100%;text-align:left;font-family:'Inter',sans-serif;position:relative;overflow:hidden}
 .menu-item::before{content:'';position:absolute;left:0;top:0;width:3px;height:100%;background:linear-gradient(180deg,#ffd700,#ff8800);opacity:0;transition:.3s}
@@ -332,10 +337,10 @@ canvas{position:absolute;inset:0;pointer-events:none;z-index:0}
             <span></span><span></span><span></span>
         </div>
         <div class="nav-center">
-            <a href="index.html" class="nav-btn">Home</a>
-            <a href="leaderboard.html" class="nav-btn active">Leaderboard</a>
-            <a href="server-status.html" class="nav-btn">Server</a>
-            <a href="world-records.html" class="nav-btn">World Records</a>
+            <a href="index.html" class="nav-btn" data-i18n="navHome">Home</a>
+            <a href="leaderboard.html" class="nav-btn active" data-i18n="navLeaderboard">Leaderboard</a>
+            <a href="world-records.html" class="nav-btn" data-i18n="navWorldRecords">World Records</a>
+            <a href="server-status.html" class="nav-btn" data-i18n="navServer">Server</a>
         </div>
         <button class="lang-btn" onclick="toggleLang()" title="Language">🌐</button>
     </div>
@@ -343,10 +348,10 @@ canvas{position:absolute;inset:0;pointer-events:none;z-index:0}
 <div class="menu-backdrop" id="menuBackdrop" onclick="closeMenu()"></div>
 <div class="menu-overlay" id="menuOverlay">
     <div class="menu-header">Navigate</div>
-    <a href="world-records.html" class="menu-item"><span class="icon">🏆</span> World Records</a>
-    <a href="archive.html" class="menu-item"><span class="icon">📦</span> Archive</a>
+    <a href="world-records.html" class="menu-item" data-i18n="menuWorldRecords"><span class="icon">🏆</span> <span class="text">World Records</span></a>
+    <a href="archive.html" class="menu-item" data-i18n="menuArchive"><span class="icon">📦</span> <span class="text">Archive</span></a>
     <div class="menu-divider"></div>
-    <button class="menu-item" onclick="toggleLang()"><span class="icon">🌐</span> Language</button>
+    <button class="menu-item" onclick="toggleLang()" data-i18n="menuLanguage"><span class="icon">🌐</span> <span class="text">Language</span></button>
 </div>
 <!-- Tap Overlay -->
 <div id="tapOverlay" onclick="this.classList.add('hidden')">
@@ -400,12 +405,63 @@ canvas{position:absolute;inset:0;pointer-events:none;z-index:0}
 <div class="mo" id="mo"><div class="mb"><button class="mc" id="mc">✕</button><div id="mcon"></div></div></div>
 
 <script>
+var lang = {
+    en: {
+        rank1: 'GOLD', rank2: 'SILVER', rank3: 'BRONZE',
+        champion: '🏆 Champion Wins',
+        mvp: '👑 MVP',
+        mmr: '⚡ MMR',
+        goals: '⚽ Goals',
+        assists: '🎯 Assists',
+        saves: '🛡️ Saves',
+        loading: 'Loading...',
+        breakdown: 'MMR Breakdown',
+        goalPt: 'Goal = 100',
+        assistPt: 'Assist = 50',
+        savePt: 'Save = 50',
+        navHome: 'Home',
+        navLeaderboard: 'Leaderboard',
+        navServer: 'Server',
+        navWorldRecords: 'World Records',
+        menuWorldRecords: 'World Records',
+        menuArchive: 'Archive',
+        menuLanguage: 'Language',
+        tapStart: 'to start the experience',
+        champLabel: '🏆 Champion Winner',
+        mvpLabel: '👑 MVP'
+    },
+    ar: {
+        rank1: 'ذهبي', rank2: 'فضي', rank3: 'برونزي',
+        champion: '🏆 انتصارات البطل',
+        mvp: '👑 أفضل لاعب',
+        mmr: '⚡ النقاط',
+        goals: '⚽ أهداف',
+        assists: '🎯 تمريرات',
+        saves: '🛡️ تصديات',
+        loading: 'جاري التحميل...',
+        breakdown: 'تفصيل النقاط',
+        goalPt: 'هدف = 100',
+        assistPt: 'تمريرة = 50',
+        savePt: 'تصدي = 50',
+        navHome: 'الرئيسية',
+        navLeaderboard: 'المتصدرين',
+        navServer: 'السيرفر',
+        navWorldRecords: 'سجلات العالم',
+        menuWorldRecords: 'سجلات العالم',
+        menuArchive: 'الأرشيف',
+        menuLanguage: 'اللغة',
+        tapStart: 'لبدء التجربة',
+        champLabel: '🏆 بطل البطولة',
+        mvpLabel: '👑 أفضل لاعب'
+    }
+};
+
 function gd(){try{var d=JSON.parse(localStorage.getItem('bhLeaderboard'));if(Array.isArray(d)&&d.length)return d;if(d&&typeof d==='object'){var a=[];for(var k in d){if(d.hasOwnProperty(k))a.push(d[k])}if(a.length)return a}}catch(e){}return null}
 function mr(p){return(p.goals||0)*100+(p.assists||0)*50+(p.saves||0)*50}
 function rp(pl){if(!pl||!pl.length)return [];var s=pl.slice().sort(function(a,b){if(a.champion!==b.champion)return b.champion-a.champion;if(a.mvp!==b.mvp)return b.mvp-a.mvp;var ma=mr(a),mb=mr(b);return ma!==mb?mb-ma:0});var r=[],cr=1;for(var i=0;i<s.length;i++){if(i>0&&!(s[i].champion===s[i-1].champion&&s[i].mvp===s[i-1].mvp&&mr(s[i])===mr(s[i-1])))cr=i+1;r.push({player:s[i],rank:cr})}return r}
 var ML=['','🥇','🥈','🥉'];
-function sm(r){var p=r.player,m=mr(p);document.getElementById('mcon').innerHTML='<div class="mrt">'+(r.rank<=3?ML[r.rank]:'')+' '+(r.rank===1?'GOLD':r.rank===2?'SILVER':r.rank===3?'BRONZE':'#'+r.rank)+'</div><h2>'+p.name+'</h2><div class="sn">'+(p.nameAr||'')+'</div><div class="ms"><div class="mr"><span class="lb">🏆 Champion Winner</span><span class="vl gd">x'+p.champion+'</span></div><div class="mr"><span class="lb">👑 MVP</span><span class="vl pu">x'+p.mvp+'</span></div><div class="md"></div><div class="mr"><span class="lb">⚡ MMR (Total)</span><span class="vl bl">'+m+'</span></div></div><div class="md"></div><div style="font-size:.6rem;color:#4848aa;letter-spacing:1px;margin:10px 0 6px;text-align:center;text-transform:uppercase">MMR Breakdown</div><div class="mmx"><div class="mi2"><div class="lb">⚽ Goals</div><div class="vl">'+(p.goals||0)+'</div></div><div class="mi2"><div class="lb">🎯 Assists</div><div class="vl">'+(p.assists||0)+'</div></div><div class="mi2"><div class="lb">🛡️ Saves</div><div class="vl">'+(p.saves||0)+'</div></div></div><div class="mtp">Goal = 100 · Assist = 50 · Save = 50</div>';document.getElementById('mo').classList.add('sh')}
-function render(){var data=gd(),ranked=rp(data);var st=document.getElementById('pst'),lw=document.getElementById('lw');var top3=ranked.slice(0,3);st.innerHTML=top3.length?[top3[1]||null,top3[0],top3[2]||null].map(function(r){if(!r)return'<div class="pc" style="visibility:hidden"></div>';var p=r.player,c='pc p'+r.rank;var t=r.rank===1?'GOLD':r.rank===2?'SILVER':'BRONZE';var na=p.name+(p.nameAr?' <span class="ar">('+p.nameAr+')</span>':'');var m=mr(p);return '<div class="'+c+'" data-idx="'+ranked.indexOf(r)+'"><div class="pb">'+(r.rank===1?'<div class="crn">👑</div>':'')+'<div class="glow"></div>'+(r.rank===1?'<div class="shimmer"></div>':'')+'<div class="cr"></div><div class="ff"></div><div class="sf"></div><div class="sh"></div><div class="px"><span class="pm">'+ML[r.rank]+'</span><span class="pt">'+t+'</span><span class="pn">'+na+'</span><div class="ps"><span>🏆 <span class="nm">'+p.champion+'</span></span></div><div class="ps"><span>👑 <span class="nm">'+p.mvp+'</span></span><span>⚡ <span class="nm">'+m+'</span></span></div></div></div><div class="sl">'+(r.rank===1?'C H A M P I O N':r.rank===2?'R U N N E R   U P':'T H I R D   P L A C E')+'</div><div class="pbse"></div></div>'}).join(''):'';var rest=ranked.slice(3);if(!ranked.length){lw.innerHTML='<div class="emp"><span class="bg">⏳</span><div class="tx">Loading...</div></div>';return}lw.innerHTML=rest.map(function(r){var p=r.player,m=mr(p);return '<div class="pcd" data-idx="'+ranked.indexOf(r)+'"><div class="rb">'+r.rank+'</div><div class="pi"><div><span class="nm">'+p.name+(p.nameAr?' <span class="ar">('+p.nameAr+')</span>':'')+'</span></div><div class="sr"><span class="sc cp">🏆 <span class="nm">'+p.champion+'</span></span><span class="sc mv">👑 <span class="nm">'+p.mvp+'</span></span><span class="sc mr">⚡ <span class="nm">'+m+'</span></span></div></div></div>'}).join('');document.querySelectorAll('.pcd').forEach(function(c,i){c.style.animation='none';void c.offsetHeight;c.style.animation='cs .5s ease '+(i*.04)+'s both'});document.querySelectorAll('.pc:not([style*="visibility"]),.pcd').forEach(function(el){el.addEventListener('click',function(e){var idx=parseInt(this.getAttribute('data-idx'));var r2=rp(gd());if(r2[idx])sm(r2[idx])})})}
+function sm(r){var isAr=currentLang==='ar';var l=isAr?lang.ar:lang.en;var p=r.player,m=mr(p);document.getElementById('mcon').innerHTML='<div class="mrt">'+(r.rank<=3?ML[r.rank]:'')+' '+(r.rank===1?l.rank1:r.rank===2?l.rank2:r.rank===3?l.rank3:'#'+r.rank)+'</div><h2>'+p.name+'</h2><div class="sn">'+(p.nameAr||'')+'</div><div class="ms"><div class="mr"><span class="lb">'+l.champLabel+'</span><span class="vl gd">x'+p.champion+'</span></div><div class="mr"><span class="lb">'+l.mvpLabel+'</span><span class="vl pu">x'+p.mvp+'</span></div><div class="md"></div><div class="mr"><span class="lb">⚡ MMR (Total)</span><span class="vl bl">'+m+'</span></div></div><div class="md"></div><div style="font-size:.6rem;color:#4848aa;letter-spacing:1px;margin:10px 0 6px;text-align:center">'+l.breakdown+'</div><div class="mmx"><div class="mi2"><div class="lb">'+l.goals+'</div><div class="vl">'+(p.goals||0)+'</div></div><div class="mi2"><div class="lb">'+l.assists+'</div><div class="vl">'+(p.assists||0)+'</div></div><div class="mi2"><div class="lb">'+l.saves+'</div><div class="vl">'+(p.saves||0)+'</div></div></div><div class="mtp">'+l.goalPt+' · '+l.assistPt+' · '+l.savePt+'</div>';document.getElementById('mo').classList.add('sh')}
+function render(){var isAr=currentLang==='ar';var l=isAr?lang.ar:lang.en;var data=gd(),ranked=rp(data);var st=document.getElementById('pst'),lw=document.getElementById('lw');var top3=ranked.slice(0,3);st.innerHTML=top3.length?[top3[1]||null,top3[0],top3[2]||null].map(function(r){if(!r)return'<div class="pc" style="visibility:hidden"></div>';var p=r.player,c='pc p'+r.rank;var t=r.rank===1?l.rank1:r.rank===2?l.rank2:l.rank3;var na=p.name+(p.nameAr?' <span class="ar">('+p.nameAr+')</span>':'');var m=mr(p);return '<div class="'+c+'" data-idx="'+ranked.indexOf(r)+'"><div class="pb">'+(r.rank===1?'<div class="crn">👑</div>':'')+'<div class="glow"></div>'+(r.rank===1?'<div class="shimmer"></div>':'')+'<div class="cr"></div><div class="ff"></div><div class="sf"></div><div class="sh"></div><div class="px"><span class="pm">'+ML[r.rank]+'</span><span class="pt">'+t+'</span><span class="pn">'+na+'</span><div class="ps"><span>'+l.champion+' <span class="nm">'+p.champion+'</span></span></div><div class="ps"><span>'+l.mvp+' <span class="nm">'+p.mvp+'</span></span><span>'+l.mmr+' <span class="nm">'+m+'</span></span></div></div></div><div class="sl">'+(r.rank===1?'C H A M P I O N':r.rank===2?'R U N N E R   U P':'T H I R D   P L A C E')+'</div><div class="pbse"></div></div>'}).join(''):'';var rest=ranked.slice(3);if(!ranked.length){lw.innerHTML='<div class="emp"><span class="bg">⏳</span><div class="tx">'+l.loading+'</div></div>';return}lw.innerHTML=rest.map(function(r){var p=r.player,m=mr(p);return '<div class="pcd" data-idx="'+ranked.indexOf(r)+'"><div class="rb">'+r.rank+'</div><div class="pi"><div><span class="nm">'+p.name+(p.nameAr?' <span class="ar">('+p.nameAr+')</span>':'')+'</span></div><div class="sr"><span class="sc cp">'+l.champion+' <span class="nm">'+p.champion+'</span></span><span class="sc mv">'+l.mvp+' <span class="nm">'+p.mvp+'</span></span><span class="sc mr">'+l.mmr+' <span class="nm">'+m+'</span></span></div></div></div>'}).join('');document.querySelectorAll('.pcd').forEach(function(c,i){c.style.animation='none';void c.offsetHeight;c.style.animation='cs .5s ease '+(i*.04)+'s both'});document.querySelectorAll('.pc:not([style*="visibility"]),.pcd').forEach(function(el){el.addEventListener('click',function(e){var idx=parseInt(this.getAttribute('data-idx'));var r2=rp(gd());if(r2[idx])sm(r2[idx])})})}
 document.getElementById('mc').addEventListener('click',function(){document.getElementById('mo').classList.remove('sh')});
 document.getElementById('mo').addEventListener('click',function(e){if(e.target===this)this.classList.remove('sh')});
 render();
@@ -667,11 +723,31 @@ function closeMenu() {
     document.body.classList.remove('no-scroll');
 }
 var currentLang = localStorage.getItem('bhLang') || 'en';
+document.querySelectorAll('[data-i18n]').forEach(function(el) {
+    var textSpan = el.querySelector('.text');
+    if (textSpan) textSpan.setAttribute('data-i18n-orig', textSpan.textContent);
+    else el.setAttribute('data-i18n-orig', el.textContent);
+});
+applyNavLang();
 function toggleLang() {
     closeMenu();
     currentLang = currentLang === 'en' ? 'ar' : 'en';
     localStorage.setItem('bhLang', currentLang);
+    document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+    applyNavLang();
     render();
+}
+function applyNavLang() {
+    var isAr = currentLang === 'ar';
+    var l = isAr ? lang.ar : lang.en;
+    document.querySelectorAll('[data-i18n]').forEach(function(el) {
+        var key = el.dataset.i18n;
+        if (l[key]) {
+            var textSpan = el.querySelector('.text');
+            if (textSpan) textSpan.textContent = l[key];
+            else el.textContent = l[key];
+        }
+    });
 }
 </script>
 </body>
