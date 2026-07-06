@@ -1,9 +1,0 @@
-{
-    "queryPort": 27020,
-    "queryIntervalMs": 15000,
-    "firebaseUrl": "https://webb-d05d3-default-rtdb.firebaseio.com",
-    "serverName": "My ARK Server",
-    "customText": "قابل للنسخ - اضغط هنا",
-    "customTextLink": "",
-    "nextRestart": null
-}

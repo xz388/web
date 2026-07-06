@@ -1,6 +1,0 @@
-{
-    "name": "ark-monitor",
-    "version": "1.0.0",
-    "description": "Zero-dependency ARK: Survival Ascended server monitor",
-    "main": "monitor.js"
-}
