@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>BrotherHood — Server Status</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=Orbitron:wght@400;700;900&family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-font-smoothing:antialiased}
+body{background:#05050a;color:#d0d0e0;font-family:'Inter',sans-serif;overflow-x:hidden;min-height:100vh}
+
+/* ===== TOP NAV ===== */
+.top-nav{position:fixed;top:0;left:0;right:0;z-index:900;display:flex;align-items:center;justify-content:center;padding:8px 16px;background:rgba(5,5,10,0.88);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.04)}
+.nav-inner{max-width:1000px;width:100%;display:flex;align-items:center;gap:6px}
+.nav-btn{display:inline-flex;align-items:center;padding:7px 14px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:rgba(255,255,255,0.02);color:#707090;font-size:0.5rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;cursor:pointer;transition:.25s;text-decoration:none}
+.nav-btn:hover{background:rgba(255,255,255,0.06);color:#e0e0f0;border-color:rgba(255,255,255,0.1)}
+.nav-btn.active{background:rgba(255,215,0,0.06);color:#ffd700;border-color:rgba(255,215,0,0.15)}
+
+/* ===== HAMBURGER ===== */
+.hamburger{margin-left:auto;width:34px;height:34px;display:flex;flex-direction:column;justify-content:center;align-items:center;cursor:pointer;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);border-radius:8px;transition:.25s;flex-shrink:0}
+.hamburger:hover{background:rgba(255,255,255,0.06)}
+.hamburger span{display:block;width:16px;height:2px;background:#707090;margin:2px 0;transition:.3s;border-radius:2px}
+.hamburger.active span{background:#ffd700}
+.hamburger.active span:nth-child(1){transform:rotate(45deg) translate(4px,4px)}
+.hamburger.active span:nth-child(2){opacity:0}
+.hamburger.active span:nth-child(3){transform:rotate(-45deg) translate(4px,-4px)}
+
+/* ===== MENU OVERLAY ===== */
+.menu-backdrop{position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:998;background:rgba(0,0,0,0.6);opacity:0;pointer-events:none;transition:.35s}
+.menu-backdrop.show{opacity:1;pointer-events:auto}
+.menu-overlay{position:fixed;top:0;right:-300px;width:270px;height:100vh;z-index:999;background:rgba(8,8,18,0.97);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);border-left:1px solid rgba(255,255,255,0.04);transition:.4s cubic-bezier(.4,0,.2,1);padding:68px 16px 20px;overflow-y:auto}
+.menu-overlay.open{right:0}
+.menu-header{font-size:0.45rem;letter-spacing:3px;text-transform:uppercase;color:#454560;padding:0 12px 12px;font-weight:700}
+.menu-item{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:8px;color:#707090;text-decoration:none;font-size:0.55rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:.25s;border:none;background:none;width:100%;text-align:left;font-family:'Inter',sans-serif}
+.menu-item:hover{background:rgba(255,255,255,0.05);color:#e0e0f0}
+.menu-divider{height:1px;background:rgba(255,255,255,0.05);margin:10px 12px}
+
+/* ===== PAGE CONTENT ===== */
+.wrapper{max-width:700px;margin:0 auto;padding:90px 20px 40px;position:relative;z-index:1}
+
+/* ===== STATUS CARD ===== */
+.card{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);border-radius:16px;padding:32px;margin-bottom:16px;transition:.3s}
+.card:hover{border-color:rgba(255,255,255,0.08)}
+
+.server-name{font-family:'Orbitron',sans-serif;font-size:1.3rem;font-weight:900;background:linear-gradient(135deg,#ffd700,#ffaa00);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-align:center;margin-bottom:24px;letter-spacing:1px}
+.server-name.ar{font-family:'Tajawal',sans-serif;-webkit-text-fill-color:#ffd700;background:none;font-size:1.5rem}
+
+/* Status Badge */
+.status-wrap{text-align:center;margin-bottom:28px}
+.status-badge{display:inline-flex;align-items:center;gap:8px;padding:8px 20px;border-radius:50px;font-size:0.65rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;border:1px solid;transition:.3s}
+.status-badge .dot{width:8px;height:8px;border-radius:50%;display:inline-block;animation:pulse 2s ease-in-out infinite}
+.status-badge.online{color:#22cc66;border-color:rgba(34,204,102,0.2);background:rgba(34,204,102,0.06)}
+.status-badge.online .dot{background:#22cc66;box-shadow:0 0 8px rgba(34,204,102,0.5)}
+.status-badge.standby{color:#ffd700;border-color:rgba(255,215,0,0.2);background:rgba(255,215,0,0.06)}
+.status-badge.standby .dot{background:#ffd700;box-shadow:0 0 8px rgba(255,215,0,0.5);animation-delay:.33s}
+.status-badge.offline{color:#ff4444;border-color:rgba(255,68,68,0.2);background:rgba(255,68,68,0.06)}
+.status-badge.offline .dot{background:#ff4444;box-shadow:0 0 8px rgba(255,68,68,0.5);animation-delay:.66s}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.85)}}
+
+/* Stats Grid */
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+.stat{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.04);border-radius:12px;padding:16px;text-align:center;transition:.3s}
+.stat:hover{border-color:rgba(255,255,255,0.08)}
+.stat .label{font-size:0.45rem;letter-spacing:2px;text-transform:uppercase;color:#555570;margin-bottom:6px;font-weight:700}
+.stat .value{font-size:1.1rem;font-weight:700;color:#e0e0f0}
+.stat .value.gold{color:#ffd700}
+.stat .value.green{color:#22cc66}
+
+/* Players Progress */
+.players-bar{height:6px;border-radius:4px;background:rgba(255,255,255,0.06);margin-top:10px;overflow:hidden}
+.players-bar .fill{height:100%;border-radius:4px;background:linear-gradient(90deg,#22cc66,#44ee88);transition:width .5s ease}
+.map-display{display:flex;align-items:center;justify-content:center;gap:8px;color:#707090;font-size:0.75rem;margin-top:4px}
+.map-display .icon{font-size:1rem}
+
+/* Custom Text */
+.custom-box{margin-bottom:16px}
+.custom-box textarea{width:100%;padding:14px 16px;border-radius:12px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.02);color:#c0c0d0;font-size:0.8rem;font-family:'Tajawal','Inter',sans-serif;resize:vertical;min-height:60px;transition:.3s;outline:none}
+.custom-box textarea:focus{border-color:rgba(255,215,0,0.2)}
+.custom-box .copy-row{display:flex;gap:6px;margin-top:6px}
+.custom-box .copy-btn{flex:1;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);color:#707090;font-size:0.5rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:.25s;font-family:'Inter',sans-serif}
+.custom-box .copy-btn:hover{background:rgba(255,255,255,0.06);color:#e0e0f0;border-color:rgba(255,255,255,0.1)}
+
+/* Next Restart */
+.restart-box{background:rgba(255,68,68,0.04);border:1px solid rgba(255,68,68,0.1);border-radius:12px;padding:16px;text-align:center}
+.restart-box .label{font-size:0.45rem;letter-spacing:2px;text-transform:uppercase;color:#555570;margin-bottom:4px;font-weight:700}
+.restart-box .countdown{font-size:1.2rem;font-weight:700;color:#ff6644;font-family:'Orbitron',sans-serif;letter-spacing:2px}
+.restart-box .countdown.over{color:#22cc66}
+.loading{text-align:center;padding:40px;color:#454560;font-size:0.65rem;letter-spacing:2px;text-transform:uppercase}
+
+@media(max-width:500px){
+    .stats{grid-template-columns:1fr}
+    .card{padding:20px}
+    .server-name{font-size:1rem}
+    .nav-btn{font-size:0.45rem;padding:6px 10px;letter-spacing:1.5px}
+    .menu-overlay{width:240px}
+}
+</style>
+</head>
+<body>
+
+<!-- ===== TOP NAV ===== -->
+<div class="top-nav">
+    <div class="nav-inner">
+        <a href="index.html" class="nav-btn">Home</a>
+        <a href="leaderboard.html" class="nav-btn">Leaderboard</a>
+        <a href="server-status.html" class="nav-btn active">Server</a>
+        <div class="hamburger" id="hamburger" onclick="toggleMenu()">
+            <span></span><span></span><span></span>
+        </div>
+    </div>
+</div>
+<div class="menu-backdrop" id="menuBackdrop" onclick="closeMenu()"></div>
+<div class="menu-overlay" id="menuOverlay">
+    <div class="menu-header">Navigate</div>
+    <a href="world-records.html" class="menu-item">🏆 World Records</a>
+    <a href="archive.html" class="menu-item">📦 Archive</a>
+    <div class="menu-divider"></div>
+    <button class="menu-item" onclick="toggleLang()">🌐 Language</button>
+</div>
+
+<div class="wrapper">
+    <div class="card" id="statusCard">
+        <div class="server-name" id="serverName">Loading...</div>
+        <div class="status-wrap"><div class="status-badge" id="statusBadge"><span class="dot"></span><span id="statusText">—</span></div></div>
+        <div class="stats">
+            <div class="stat"><div class="label">Players</div><div class="value gold" id="playersDisplay">0 / 0</div><div class="players-bar"><div class="fill" id="playersFill" style="width:0%"></div></div></div>
+            <div class="stat"><div class="label">Uptime</div><div class="value green" id="uptimeDisplay">—</div><div class="map-display" id="mapDisplay"><span class="icon">🗺️</span><span id="mapName">—</span></div></div>
+        </div>
+        <div class="custom-box" id="customBox">
+            <textarea id="customTextArea" readonly placeholder="—"></textarea>
+            <div class="copy-row"><button class="copy-btn" onclick="copyText()">📋 Copy</button></div>
+        </div>
+        <div class="restart-box" id="restartBox" style="display:none">
+            <div class="label">Next Restart</div>
+            <div class="countdown" id="countdownDisplay">—</div>
+        </div>
+    </div>
+    <div class="loading" id="loadingState" style="display:none">Loading server status...</div>
+</div>
+
+<script>
+var FB = 'https://webb-d05d3-default-rtdb.firebaseio.com';
+var currentLang = localStorage.getItem('bhLang') || 'en';
+var lastData = null;
+var countdownTimer = null;
+
+function toggleMenu() {
+    var m = document.getElementById('menuOverlay');
+    var b = document.getElementById('menuBackdrop');
+    var h = document.getElementById('hamburger');
+    var open = m.classList.toggle('open');
+    b.classList.toggle('show', open);
+    h.classList.toggle('active', open);
+    document.body.classList.toggle('no-scroll', open);
+}
+function closeMenu() {
+    document.getElementById('menuOverlay').classList.remove('open');
+    document.getElementById('menuBackdrop').classList.remove('show');
+    document.getElementById('hamburger').classList.remove('active');
+    document.body.classList.remove('no-scroll');
+}
+
+function toggleLang() {
+    closeMenu();
+    currentLang = currentLang === 'en' ? 'ar' : 'en';
+    localStorage.setItem('bhLang', currentLang);
+    renderStatus();
+}
+
+function fmtNum(n){return n<10?'0'+n:''+n}
+
+function fmtDur(sec){
+    sec=Math.floor(sec||0);
+    var h=Math.floor(sec/3600);
+    var m=Math.floor((sec%3600)/60);
+    var s=sec%60;
+    return (h>0?h+'h ':'')+fmtNum(m)+'m '+fmtNum(s)+'s'
+}
+
+function fmtCountdown(ts){
+    var diff = ts - Date.now();
+    if (diff <= 0) return 'Restarting...';
+    var h=Math.floor(diff/3600000);
+    var m=Math.floor((diff%3600000)/60000);
+    var s=Math.floor((diff%60000)/1000);
+    return (h>0?h+'h ':'')+fmtNum(m)+'m '+fmtNum(s)+'s'
+}
+
+function copyText(){
+    var ta=document.getElementById('customTextArea');
+    if(!ta.value) return;
+    ta.select();
+    ta.setSelectionRange(0,99999);
+    document.execCommand('copy');
+    var btn=event&&event.target?event.target:document.querySelector('.copy-btn');
+    var orig=btn.textContent;
+    btn.textContent='✅ Copied!';
+    setTimeout(function(){btn.textContent=orig;},2000);
+}
+
+function renderStatus(){
+    if(!lastData){document.getElementById('loadingState').style.display='';document.getElementById('statusCard').style.display='none';return}
+    document.getElementById('loadingState').style.display='none';
+    document.getElementById('statusCard').style.display='';
+    var d=lastData;
+    var isAr=currentLang==='ar';
+
+    // Server Name
+    var snEl=document.getElementById('serverName');
+    snEl.textContent=d.name||(isAr?'سيرفر آرك':'ARK Server');
+    snEl.classList.toggle('ar',isAr);
+
+    // Status
+    var badge=document.getElementById('statusBadge');
+    var stxt=document.getElementById('statusText');
+    badge.className='status-badge '+d.status;
+    if(isAr){
+        var sMap={online:'شغال',standby:'استعداد',offline:'مطفى'};
+        stxt.textContent=sMap[d.status]||d.status;
+    } else {
+        stxt.textContent=d.status.charAt(0).toUpperCase()+d.status.slice(1);
+    }
+
+    // Players
+    document.getElementById('playersDisplay').textContent=d.players+' / '+d.maxPlayers;
+    var fillPct=d.maxPlayers>0?Math.min(100,Math.round(d.players/d.maxPlayers*100)):0;
+    document.getElementById('playersFill').style.width=fillPct+'%';
+
+    // Map
+    document.getElementById('mapName').textContent=d.map||(isAr?'غير معروف':'Unknown');
+
+    // Uptime
+    document.getElementById('uptimeDisplay').textContent=d.uptimeStr||(isAr?'-':'—');
+
+    // Custom Text
+    var ta=document.getElementById('customTextArea');
+    if(d.customText&&d.customText!==''){ta.value=d.customText;ta.style.display=''}
+    else {ta.value='';ta.style.display=''}
+    document.querySelector('.copy-row').style.display=d.customText?'':'none';
+
+    // Restart
+    var rb=document.getElementById('restartBox');
+    var cd=document.getElementById('countdownDisplay');
+    if(d.nextRestart&&d.status==='online'){
+        rb.style.display='';
+        if(countdownTimer)clearInterval(countdownTimer);
+        countdownTimer=setInterval(function(){
+            var rem=d.nextRestart-Date.now();
+            if(rem<=0){cd.textContent=isAr?'جاري اعادة التشغيل...':'Restarting...';cd.className='countdown over'}
+            else {cd.textContent=fmtCountdown(d.nextRestart);cd.className='countdown'}
+        },1000);
+    } else {rb.style.display='none';if(countdownTimer){clearInterval(countdownTimer);countdownTimer=null}}
+}
+
+function fetchStatus(){
+    var x=new XMLHttpRequest();
+    x.open('GET',FB+'/serverStatus.json');
+    x.onload=function(){
+        try{
+            var d=JSON.parse(x.responseText);
+            if(d){lastData=d;renderStatus()}
+        }catch(e){}
+    };
+    x.onerror=function(){};
+    x.send();
+}
+
+renderStatus();
+fetchStatus();
+setInterval(fetchStatus,15000);
+</script>
+</body>
+</html>

@@ -8,9 +8,31 @@
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600;700;800&family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-font-smoothing:antialiased}
+
+/* ===== TOP NAV ===== */
+.top-nav{position:fixed;top:0;left:0;right:0;z-index:900;display:flex;align-items:center;justify-content:center;padding:8px 16px;background:rgba(5,5,10,0.88);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.04)}
+.nav-inner{max-width:1000px;width:100%;display:flex;align-items:center;gap:6px}
+.nav-btn{display:inline-flex;align-items:center;padding:7px 14px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:rgba(255,255,255,0.02);color:#707090;font-size:0.5rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;cursor:pointer;transition:.25s;text-decoration:none}
+.nav-btn:hover{background:rgba(255,255,255,0.06);color:#e0e0f0;border-color:rgba(255,255,255,0.1)}
+.nav-btn.active{background:rgba(255,215,0,0.06);color:#ffd700;border-color:rgba(255,215,0,0.15)}
+.hamburger{margin-left:auto;width:34px;height:34px;display:flex;flex-direction:column;justify-content:center;align-items:center;cursor:pointer;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);border-radius:8px;transition:.25s;flex-shrink:0}
+.hamburger:hover{background:rgba(255,255,255,0.06)}
+.hamburger span{display:block;width:16px;height:2px;background:#707090;margin:2px 0;transition:.3s;border-radius:2px}
+.hamburger.active span{background:#ffd700}
+.hamburger.active span:nth-child(1){transform:rotate(45deg) translate(4px,4px)}
+.hamburger.active span:nth-child(2){opacity:0}
+.hamburger.active span:nth-child(3){transform:rotate(-45deg) translate(4px,-4px)}
+.menu-backdrop{position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:998;background:rgba(0,0,0,0.6);opacity:0;pointer-events:none;transition:.35s}
+.menu-backdrop.show{opacity:1;pointer-events:auto}
+.menu-overlay{position:fixed;top:0;right:-300px;width:270px;height:100vh;z-index:999;background:rgba(8,8,18,0.97);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);border-left:1px solid rgba(255,255,255,0.04);transition:.4s cubic-bezier(.4,0,.2,1);padding:68px 16px 20px;overflow-y:auto}
+.menu-overlay.open{right:0}
+.menu-header{font-size:0.45rem;letter-spacing:3px;text-transform:uppercase;color:#454560;padding:0 12px 12px;font-weight:700}
+.menu-item{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:8px;color:#707090;text-decoration:none;font-size:0.55rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:.25s;border:none;background:none;width:100%;text-align:left;font-family:'Inter',sans-serif}
+.menu-item:hover{background:rgba(255,255,255,0.05);color:#e0e0f0}
+.menu-divider{height:1px;background:rgba(255,255,255,0.05);margin:10px 12px}
 html{color-scheme:dark}html,body{overflow-x:hidden;overflow-y:auto;min-height:100vh}
 ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:#050510}::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#ffd700,#b8860b);border-radius:3px}::-webkit-scrollbar-thumb:hover{background:linear-gradient(180deg,#ffe44d,#d4a800)}
-body{background:#050510;color:#eee;font-family:'Inter',sans-serif}
+body{background:#050510;color:#eee;font-family:'Inter',sans-serif;padding-top:50px}
 .page{
   width:100%;min-height:100vh;
   background:linear-gradient(170deg,#080816 0%,#020208 40%,#0c0c1e 70%,#060612 100%);
@@ -295,6 +317,24 @@ canvas{position:absolute;inset:0;pointer-events:none;z-index:0}
 </style>
 </head>
 <body>
+<div class="top-nav">
+    <div class="nav-inner">
+        <a href="index.html" class="nav-btn">Home</a>
+        <a href="leaderboard.html" class="nav-btn active">Leaderboard</a>
+        <a href="server-status.html" class="nav-btn">Server</a>
+        <div class="hamburger" id="hamburger" onclick="toggleMenu()">
+            <span></span><span></span><span></span>
+        </div>
+    </div>
+</div>
+<div class="menu-backdrop" id="menuBackdrop" onclick="closeMenu()"></div>
+<div class="menu-overlay" id="menuOverlay">
+    <div class="menu-header">Navigate</div>
+    <a href="world-records.html" class="menu-item">🏆 World Records</a>
+    <a href="archive.html" class="menu-item">📦 Archive</a>
+    <div class="menu-divider"></div>
+    <button class="menu-item" onclick="toggleLang()">🌐 Language</button>
+</div>
 <!-- Tap Overlay -->
 <div id="tapOverlay" onclick="this.classList.add('hidden')">
   <div style="text-align:center;animation:tapPulse 2s ease-in-out infinite">
@@ -598,6 +638,23 @@ document.getElementById('tapOverlay').addEventListener('click', function() {
         startTrackFromSaved();
     });
 });
+</script>
+<script>
+function toggleMenu() {
+    var m = document.getElementById('menuOverlay');
+    var b = document.getElementById('menuBackdrop');
+    var h = document.getElementById('hamburger');
+    var open = m.classList.toggle('open');
+    b.classList.toggle('show', open);
+    h.classList.toggle('active', open);
+    document.body.classList.toggle('no-scroll', open);
+}
+function closeMenu() {
+    document.getElementById('menuOverlay').classList.remove('open');
+    document.getElementById('menuBackdrop').classList.remove('show');
+    document.getElementById('hamburger').classList.remove('active');
+    document.body.classList.remove('no-scroll');
+}
 </script>
 </body>
 </html>
