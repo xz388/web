@@ -140,6 +140,8 @@ body{background:#05050a;color:#d0d0e0;font-family:'Inter',sans-serif;overflow-x:
 </div>
 
 <script>
+var BM_ID = '39732635';
+var BM_API = 'https://api.battlemetrics.com/servers/'+BM_ID;
 var FB = 'https://webb-d05d3-default-rtdb.firebaseio.com';
 var currentLang = localStorage.getItem('bhLang') || 'en';
 var lastData = null;
@@ -214,17 +216,18 @@ function renderStatus(){
     // Status
     var badge=document.getElementById('statusBadge');
     var stxt=document.getElementById('statusText');
-    badge.className='status-badge '+d.status;
+    var status = d.status || 'offline';
+    badge.className='status-badge '+status;
     if(isAr){
         var sMap={online:'شغال',standby:'استعداد',offline:'مطفى'};
-        stxt.textContent=sMap[d.status]||d.status;
+        stxt.textContent=sMap[status]||status;
     } else {
-        stxt.textContent=d.status.charAt(0).toUpperCase()+d.status.slice(1);
+        stxt.textContent=status.charAt(0).toUpperCase()+status.slice(1);
     }
 
     // Players
-    document.getElementById('playersDisplay').textContent=d.players+' / '+d.maxPlayers;
-    var fillPct=d.maxPlayers>0?Math.min(100,Math.round(d.players/d.maxPlayers*100)):0;
+    document.getElementById('playersDisplay').textContent=(d.players||0)+' / '+(d.maxPlayers||0);
+    var fillPct=d.maxPlayers>0?Math.min(100,Math.round((d.players||0)/d.maxPlayers*100)):0;
     document.getElementById('playersFill').style.width=fillPct+'%';
 
     // Map
@@ -242,7 +245,7 @@ function renderStatus(){
     // Restart
     var rb=document.getElementById('restartBox');
     var cd=document.getElementById('countdownDisplay');
-    if(d.nextRestart&&d.status==='online'){
+    if(d.nextRestart&&status==='online'){
         rb.style.display='';
         if(countdownTimer)clearInterval(countdownTimer);
         countdownTimer=setInterval(function(){
@@ -253,22 +256,58 @@ function renderStatus(){
     } else {rb.style.display='none';if(countdownTimer){clearInterval(countdownTimer);countdownTimer=null}}
 }
 
-function fetchStatus(){
+function fetchBM(){
     var x=new XMLHttpRequest();
-    x.open('GET',FB+'/serverStatus.json');
+    x.open('GET',BM_API);
     x.onload=function(){
         try{
-            var d=JSON.parse(x.responseText);
-            if(d){lastData=d;renderStatus()}
+            var r=JSON.parse(x.responseText);
+            if(r&&r.data){
+                var a=r.data.attributes;
+                var data={
+                    name: a.name,
+                    status: a.status,
+                    players: a.players,
+                    maxPlayers: a.maxPlayers,
+                    map: a.details&&a.details.map?a.details.map:'',
+                    uptimeStr: ''
+                };
+                if(a.status==='online'){
+                    var bmStart=new Date(a.updatedAt).getTime();
+                    var sec=Math.floor((Date.now()-bmStart)/1000);
+                    data.uptimeStr=fmtDur(sec);
+                }
+                if(lastData&&lastData.customText)data.customText=lastData.customText;
+                if(lastData&&lastData.nextRestart)data.nextRestart=lastData.nextRestart;
+                lastData=data;
+                renderStatus();
+            }
         }catch(e){}
     };
     x.onerror=function(){};
     x.send();
 }
 
+function fetchFB(){
+    var x=new XMLHttpRequest();
+    x.open('GET',FB+'/customConfig.json');
+    x.onload=function(){
+        try{
+            var d=JSON.parse(x.responseText);
+            if(d&&lastData){
+                lastData.customText=d.customText||'';
+                lastData.nextRestart=d.nextRestart||null;
+                renderStatus();
+            }
+        }catch(e){}
+    };
+    x.send();
+}
+
 renderStatus();
-fetchStatus();
-setInterval(fetchStatus,15000);
+fetchBM();
+setInterval(fetchBM,60000);
+setInterval(fetchFB,30000);
 </script>
 </body>
 </html>
