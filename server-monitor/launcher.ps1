@@ -1,5 +1,5 @@
 param(
-    [string]$ManagerPath = "C:\Program Files (x86)\Steam\steamapps\common\ASADedicatedManager\ASADedicatedManager.exe",
+    [string]$ManagerPath = "D:\ARKMAN\ASADedicatedManager.exe",
     [string]$MonitorScript = "D:\web\server-monitor\monitor.js"
 )
 
