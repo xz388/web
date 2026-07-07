@@ -831,7 +831,10 @@
 <div class="menu-backdrop" id="menuBackdrop" onclick="closeMenu()"></div>
 <div class="menu-overlay" id="menuOverlay">
     <div class="menu-header">Navigate</div>
+    <a href="index.html" class="menu-item" data-i18n="navHome"><span class="icon">🏠</span> <span class="text">Home</span></a>
+    <a href="leaderboard.html" class="menu-item" data-i18n="navLeaderboard"><span class="icon">📊</span> <span class="text">Leaderboard</span></a>
     <a href="world-records.html" class="menu-item" data-i18n="menuWorldRecords"><span class="icon">🏆</span> <span class="text">World Records</span></a>
+    <a href="server-status.html" class="menu-item" data-i18n="navServer"><span class="icon">🖥️</span> <span class="text">Server</span></a>
     <a href="archive.html" class="menu-item" data-i18n="menuArchive"><span class="icon">📦</span> <span class="text">Archive</span></a>
     <div class="menu-divider"></div>
     <button class="menu-item" onclick="toggleLang()" data-i18n="menuLanguage"><span class="icon">🌐</span> <span class="text">Language</span></button>
@@ -939,7 +942,7 @@
             <div class="line"></div>
         </div>
         <div class="updates-list" id="updatesList"></div>
-        <a href="archive.html" style="display:block;text-align:center;margin-top:16px;color:#444488;font-size:0.7rem;text-decoration:none;letter-spacing:1px;transition:0.3s">📦 View Archive →</a>
+        <a href="archive.html" data-i18n="viewArchive" style="display:block;text-align:center;margin-top:16px;color:#444488;font-size:0.7rem;text-decoration:none;letter-spacing:1px;transition:0.3s"></a>
     </section>
 
     <!-- ===== POLL ===== -->
@@ -1152,6 +1155,8 @@ function openProfile(id) {
     document.getElementById('modalAvatar').textContent = p.avatar;
     document.getElementById('modalName').textContent = p.name;
     document.getElementById('modalTag').textContent = p.tag;
+    var tagKey = p.tag === 'Owner' ? 'owner' : p.tag === 'Founder' ? 'founder' : p.tag === 'Cousin' ? 'cousin' : null;
+    if (currentLang === 'ar' && tagKey && lang.ar[tagKey]) document.getElementById('modalTag').textContent = lang.ar[tagKey];
     const bioEn = p.bio;
     const bioKey = p.bioKey;
     document.getElementById('modalBio').textContent = (currentLang === 'ar' && bioKey && lang.ar[bioKey]) ? lang.ar[bioKey] : bioEn;
@@ -1205,11 +1210,19 @@ const lang = {
         menuWorldRecords: 'World Records',
         menuArchive: 'Archive',
         menuLanguage: 'Language',
+        pollVotes: 'votes',
+        pollVote: 'vote',
+        pollEnded: 'Poll ended',
+        pollYes: '✅ Yes',
+        pollNo: '❌ No',
+        pollTie: '⚖️ Tie',
+        noPoll: 'No active poll'
     },
     ar: {
         home: 'الرئيسية',
         updates: 'التحديثات',
         established: '• تأسس 2026 •',
+        cousin: 'ابن العم',
         tagline: 'القروب',
         motto: '✦ ولاء · احترام · وحدة ✦',
         ownerFounders: '⚜ المالك والمؤسسون',
@@ -1254,8 +1267,8 @@ const lang = {
         rankGold: 'ذهبي',
         rankSilver: 'فضي',
         rankBronze: 'برونزي',
-        bestPlayer: 'أفضل لاعب حالياً',
-        viewLeaderboard: 'عرض المتصدرين',
+        bestPlayer: '🏆 أفضل لاعب حالياً',
+        viewLeaderboard: '← عرض المتصدرين',
         navHome: 'الرئيسية',
         navLeaderboard: 'المتصدرين',
         navServer: 'السيرفر',
@@ -1263,6 +1276,13 @@ const lang = {
         menuWorldRecords: 'سجلات العالم',
         menuArchive: 'الأرشيف',
         menuLanguage: 'اللغة',
+        pollVotes: 'أصوات',
+        pollVote: 'صوت',
+        pollEnded: 'انتهى التصويت',
+        pollYes: '✅ نعم',
+        pollNo: '❌ لا',
+        pollTie: '⚖️ تعادل',
+        noPoll: 'لا يوجد تصويت نشط'
     }
 };
 let currentLang = 'en';
@@ -1290,19 +1310,18 @@ function applyLang() {
     // Nav buttons
     document.querySelectorAll('.nav-btn[data-i18n]').forEach(function(el) {
         var key = el.dataset.i18n;
-        if (isAr && lang.ar[key]) el.textContent = lang.ar[key];
+        var l = isAr ? lang.ar : lang.en;
+        if (l[key]) el.textContent = l[key];
         else el.textContent = el.getAttribute('data-i18n-orig') || el.textContent;
     });
     // Menu items
     document.querySelectorAll('.menu-item[data-i18n]').forEach(function(el) {
         var key = el.dataset.i18n;
-        if (isAr && lang.ar[key]) {
-            var textSpan = el.querySelector('.text');
-            if (textSpan) textSpan.textContent = lang.ar[key];
-        } else {
-            var textSpan = el.querySelector('.text');
-            if (textSpan) textSpan.textContent = el.getAttribute('data-i18n-orig') || textSpan.textContent;
-        }
+        var textSpan = el.querySelector('.text');
+        var l = isAr ? lang.ar : lang.en;
+        if (l[key] && textSpan) textSpan.textContent = l[key];
+        else if (l[key]) el.textContent = l[key];
+        else if (textSpan) textSpan.textContent = textSpan.getAttribute('data-i18n-orig') || textSpan.textContent;
     });
     // data-i18n elements
     document.querySelectorAll('[data-i18n]').forEach(function(el) {
@@ -1360,8 +1379,7 @@ window.addEventListener('keydown', e => {
 
 // ==================== MUSIC PLAYER ====================
 const playlist = [
-    { src: 'music/death%20bed%20powfu%20%5Bsped%20up%5D.mp3' },
-    { src: 'music/track2.mp3' }
+    { src: 'music/t.mp3' }
 ];
 let currentTrack = 0;
 let isPlaying = false;
@@ -1713,13 +1731,21 @@ function renderPoll() {
     const el = document.getElementById('pollDisplay');
     if (!el) return;
     const p = getPoll();
-    if (!p || (!p.active && !p.ended)) { el.innerHTML = '<div class="poll-none">No active poll</div>'; return; }
+    if (!p || (!p.active && !p.ended)) { el.innerHTML = '<div class="poll-none">'+noPoll+'</div>'; return; }
     const question = currentLang === 'ar' && p.qAr ? p.qAr : p.q;
     const voteKey = 'bhPollVoted_'+((p.q||'')+(p.endAt||''));
     const hasVoted = !!localStorage.getItem(voteKey);
     const rem = getRemaining(p);
     const timerHtml = p.active && p.endAt ? '<div class="poll-ended" style="color:#ffd700">⏳ '+fmtRemaining(rem)+'</div>' : '';
     const colors = ['#22cc66','#ffd700','#4488ff','#ff6644','#aa66ff','#ff88cc'];
+    var isAr = currentLang === 'ar';
+    var pollVote = isAr ? 'صوت' : 'vote';
+    var pollVotes = isAr ? 'أصوات' : 'votes';
+    var pollEnded = isAr ? 'انتهى التصويت' : 'Poll ended';
+    var pollYes = isAr ? '✅ نعم' : '✅ Yes';
+    var pollNo = isAr ? '❌ لا' : '❌ No';
+    var pollTie = isAr ? '⚖️ تعادل' : '⚖️ Tie';
+    var noPoll = isAr ? 'لا يوجد تصويت نشط' : 'No active poll';
 
     if (p.type === 'custom' && p.options) {
         const total = p.options.reduce((s,o) => s + (o.count||0), 0);
@@ -1734,7 +1760,7 @@ function renderPoll() {
                 const c = colors[i % colors.length];
                 return `<div style="display:flex;align-items:center;gap:8px;margin:4px 0"><span style="width:30px;font-size:0.7rem;color:#8888aa;text-align:right">${pct}%</span><div style="flex:1;height:8px;border-radius:6px;background:rgba(255,255,255,0.04);overflow:hidden"><div class="poll-fill" style="width:${pct}%;background:${c}"></div></div></div>`;
             }).join('');
-            el.innerHTML = `<div class="poll-card"><div class="poll-q">${question}</div><div class="poll-actions">${opts}</div>${bars}<div class="poll-total">${total} vote${total!==1?'s':''}</div>${timerHtml}</div>`;
+            el.innerHTML = `<div class="poll-card"><div class="poll-q">${question}</div><div class="poll-actions">${opts}</div>${bars}<div class="poll-total">${total} ${total===1?pollVote:pollVotes}</div>${timerHtml}</div>`;
         } else if (p.active && !hasVoted) {
             let opts = p.options.map((o,i) => {
                 const c = colors[i % colors.length];
@@ -1753,7 +1779,7 @@ function renderPoll() {
                 return `<div style="display:flex;align-items:center;gap:8px;margin:4px 0"><span style="width:30px;font-size:0.7rem;color:#8888aa;text-align:right">${pct}%</span><div style="flex:1;height:8px;border-radius:6px;background:rgba(255,255,255,0.04);overflow:hidden"><div class="poll-fill" style="width:${pct}%;background:${c}"></div></div></div>`;
             }).join('');
             let winner = p.options.reduce((best,o,i) => (o.count||0) > ((best&&best.count)||0) ? {text:o.label||o.text||'Option '+(i+1),count:o.count||0} : best, null);
-            el.innerHTML = `<div class="poll-card"><div class="poll-q">${question}</div><div class="poll-actions">${opts}</div>${bars}<div class="poll-total">${total} vote${total!==1?'s':''}</div>${winner ? '<div class="poll-winner">🏆 '+(winner.text)+' ('+(winner.count)+')</div>' : ''}<div class="poll-ended">Poll ended</div></div>`;
+            el.innerHTML = `<div class="poll-card"><div class="poll-q">${question}</div><div class="poll-actions">${opts}</div>${bars}<div class="poll-total">${total} ${total===1?pollVote:pollVotes}</div>${winner ? '<div class="poll-winner">🏆 '+(winner.text)+' ('+(winner.count)+')</div>' : ''}<div class="poll-ended">${pollEnded}</div></div>`;
         }
     } else {
         const total = (p.yes||0) + (p.no||0);
@@ -1764,30 +1790,30 @@ function renderPoll() {
             let btns;
             if (hasVoted) {
                 btns = `<div class="poll-actions">
-                    <div class="poll-btn yes voted"><span class="label">✅ Yes</span><span class="pct">${yesPct}%</span></div>
-                    <div class="poll-btn no voted"><span class="label">❌ No</span><span class="pct">${noPct}%</span></div>
+                    <div class="poll-btn yes voted"><span class="label">${pollYes}</span><span class="pct">${yesPct}%</span></div>
+                    <div class="poll-btn no voted"><span class="label">${pollNo}</span><span class="pct">${noPct}%</span></div>
                 </div>
                 <div class="poll-bar"><div class="yes-fill" style="width:${yesPct}%"></div><div class="no-fill" style="width:${noPct}%"></div></div>
-                <div class="poll-total">${total} vote${total!==1?'s':''}</div>${timerHtml}</div>`;
+                <div class="poll-total">${total} ${total===1?pollVote:pollVotes}</div>${timerHtml}</div>`;
             } else {
                 btns = `<div class="poll-actions">
-                    <button class="poll-btn yes" onclick="vote('yes')"><span class="label">✅ Yes</span></button>
-                    <button class="poll-btn no" onclick="vote('no')"><span class="label">❌ No</span></button>
+                    <button class="poll-btn yes" onclick="vote('yes')"><span class="label">${pollYes}</span></button>
+                    <button class="poll-btn no" onclick="vote('no')"><span class="label">${pollNo}</span></button>
                 </div>${timerHtml}`;
             }
             el.innerHTML = `<div class="poll-card"><div class="poll-q">${question}</div>${btns}</div>`;
         } else {
-            const winner = (p.yes||0) > (p.no||0) ? '✅ Yes '+(p.yes||0) : (p.yes||0) < (p.no||0) ? '❌ No '+(p.no||0) : '⚖️ Tie';
+            const winner = (p.yes||0) > (p.no||0) ? pollYes+' '+(p.yes||0) : (p.yes||0) < (p.no||0) ? pollNo+' '+(p.no||0) : pollTie;
             el.innerHTML = `<div class="poll-card">
                 <div class="poll-q">${question}</div>
                 <div class="poll-actions">
-                    <div class="poll-btn yes voted"><span class="label">✅ Yes</span><span class="pct">${yesPct}%</span></div>
-                    <div class="poll-btn no voted"><span class="label">❌ No</span><span class="pct">${noPct}%</span></div>
+                    <div class="poll-btn yes voted"><span class="label">${pollYes}</span><span class="pct">${yesPct}%</span></div>
+                    <div class="poll-btn no voted"><span class="label">${pollNo}</span><span class="pct">${noPct}%</span></div>
                 </div>
                 <div class="poll-bar"><div class="yes-fill" style="width:${yesPct}%"></div><div class="no-fill" style="width:${noPct}%"></div></div>
-                <div class="poll-total">${total} vote${total!==1?'s':''}</div>
+                <div class="poll-total">${total} ${total===1?pollVote:pollVotes}</div>
                 <div class="poll-winner">🏆 ${winner}</div>
-                <div class="poll-ended">Poll ended</div>
+                <div class="poll-ended">${pollEnded}</div>
             </div>`;
         }
     }

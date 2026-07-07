@@ -41,6 +41,7 @@ body::before{content:'';position:fixed;top:-50%;left:-50%;width:200%;height:200%
 .menu-backdrop{position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:998;background:rgba(0,0,0,0.5);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:.4s}
 .menu-backdrop.show{opacity:1;pointer-events:auto}
 .menu-overlay{position:fixed;direction:ltr;top:0;left:-75%;width:75%;max-width:320px;min-width:240px;height:100vh;z-index:999;background:linear-gradient(170deg,rgba(8,8,22,0.98),rgba(15,10,30,0.97));-webkit-backdrop-filter:blur(28px);backdrop-filter:blur(28px);border-right:1px solid rgba(255,255,255,0.03);transition:.45s cubic-bezier(.22,1,.36,1);padding:68px 16px 20px;overflow-y:auto}
+.menu-overlay.open{left:0}
 .menu-overlay::before{content:'';position:fixed;top:-50%;right:-50%;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(255,215,0,0.04),transparent 60%);pointer-events:none;z-index:-1;animation:menuGlow 6s ease-in-out infinite alternate}
 .menu-overlay::after{content:'';position:fixed;bottom:-30%;left:-30%;width:250px;height:250px;border-radius:50%;background:radial-gradient(circle,rgba(100,50,255,0.03),transparent 60%);pointer-events:none;z-index:-1;animation:menuGlow2 8s ease-in-out infinite alternate}
 @keyframes menuGlow{0%{transform:translate(0,0) scale(1)}100%{transform:translate(-30px,30px) scale(1.2)}}
@@ -55,10 +56,10 @@ body::before{content:'';position:fixed;top:-50%;left:-50%;width:200%;height:200%
 .menu-divider{height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.05),transparent);margin:10px 12px}
 
 /* ===== PAGE CONTENT ===== */
-.wrapper{max-width:680px;margin:0 auto;padding:90px 20px 40px;position:relative;z-index:1}
+.wrapper{direction:ltr !important;max-width:680px;margin:0 auto;padding:90px 20px 40px;position:relative;z-index:1}
 
 /* ===== STATUS CARD ===== */
-.card{background:rgba(255,255,255,0.015);border:1px solid rgba(255,255,255,0.05);border-radius:20px;padding:34px 32px;margin-bottom:16px;transition:.5s;position:relative;overflow:hidden}
+.card{direction:ltr !important;background:rgba(255,255,255,0.015);border:1px solid rgba(255,255,255,0.05);border-radius:20px;padding:34px 32px;margin-bottom:16px;transition:.5s;position:relative;overflow:hidden}
 .card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,215,0,0.12),transparent)}
 .card::after{content:'';position:absolute;inset:0;border-radius:20px;pointer-events:none;border:1px solid transparent;transition:.5s}
 .card:hover::after{border-color:rgba(255,215,0,0.04)}
@@ -90,7 +91,7 @@ body::before{content:'';position:fixed;top:-50%;left:-50%;width:200%;height:200%
 .address-box .addr.copied{background:rgba(34,204,102,0.1);color:#22cc66}
 
 /* Stats Grid */
-.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+.stats{direction:ltr !important;display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
 .stat{background:rgba(255,255,255,0.015);border:1px solid rgba(255,255,255,0.03);border-radius:14px;padding:18px 16px;text-align:center;transition:.3s;position:relative;overflow:hidden}
 .stat::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,215,0,0.06),transparent);opacity:0;transition:.3s}
 .stat:hover::before{opacity:1}
@@ -133,6 +134,7 @@ body::before{content:'';position:fixed;top:-50%;left:-50%;width:200%;height:200%
     gap: 14px;
     backdrop-filter: blur(12px);
     transition: border-color 0.3s;
+    direction:ltr !important;
     margin-top: 14px;
     flex-shrink: 0;
 }
@@ -257,7 +259,10 @@ body::before{content:'';position:fixed;top:-50%;left:-50%;width:200%;height:200%
 <div class="menu-backdrop" id="menuBackdrop" onclick="closeMenu()"></div>
 <div class="menu-overlay" id="menuOverlay">
     <div class="menu-header">Navigate</div>
+    <a href="index.html" class="menu-item" data-i18n="navHome"><span class="icon">🏠</span> <span class="text">Home</span></a>
+    <a href="leaderboard.html" class="menu-item" data-i18n="navLeaderboard"><span class="icon">📊</span> <span class="text">Leaderboard</span></a>
     <a href="world-records.html" class="menu-item" data-i18n="menuWorldRecords"><span class="icon">🏆</span> <span class="text">World Records</span></a>
+    <a href="server-status.html" class="menu-item active" data-i18n="navServer"><span class="icon">🖥️</span> <span class="text">Server</span></a>
     <a href="archive.html" class="menu-item" data-i18n="menuArchive"><span class="icon">📦</span> <span class="text">Archive</span></a>
     <div class="menu-divider"></div>
     <button class="menu-item" onclick="toggleLang()" data-i18n="menuLanguage"><span class="icon">🌐</span> <span class="text">Language</span></button>
@@ -407,9 +412,9 @@ function renderStatus(){
     document.getElementById('playersFill').style.width=(d.maxPlayers>0?Math.min(100,Math.round((d.players||0)/d.maxPlayers*100)):0)+'%';
     document.getElementById('mapName').textContent=d.map||(isAr?'غير معروف':'Unknown');
     document.getElementById('uptimeDisplay').textContent=d.uptimeStr||(isAr?'-':'—');
-    // Address box: show only when online
+    // Address box: always visible
     var ab=document.getElementById('addressBox');
-    ab.style.display=(status==='online')?'':'none';
+    ab.style.display='';
     if(isAr){document.getElementById('addrLabel').textContent='أدرس السيرفر'}
     else{document.getElementById('addrLabel').textContent='Server Address'}
     if(isAr){document.getElementById('playersLabel').textContent='اللاعبين'}
@@ -438,8 +443,7 @@ function fetchFB(){
 }
 // ==================== MUSIC PLAYER ====================
 const playlist = [
-    { src: 'music/death%20bed%20powfu%20%5Bsped%20up%5D.mp3' },
-    { src: 'music/track2.mp3' }
+    { src: 'music/t.mp3' }
 ];
 let currentTrack = 0;
 let isPlaying = false;
