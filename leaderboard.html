@@ -513,13 +513,13 @@ render();
 (function(){var g=document.getElementById('mg');document.addEventListener('mousemove',function(e){g.style.left=e.clientX+'px';g.style.top=e.clientY+'px'});document.addEventListener('mouseleave',function(){g.style.opacity='0'});document.addEventListener('mouseenter',function(){g.style.opacity='1'})})();
 (function(){var c=document.getElementById('particles'),ctx=c.getContext('2d');var ps=[],mx=-999,my=-999;function rs(){c.width=window.innerWidth;c.height=window.innerHeight}rs();window.addEventListener('resize',rs);document.addEventListener('mousemove',function(e){mx=e.clientX;my=e.clientY});for(var i=0;i<70;i++)ps.push({x:Math.random()*c.width,y:Math.random()*c.height,vx:(Math.random()-.5)*.4,vy:(Math.random()-.5)*.4,r:Math.random()*2.5+.8,o:Math.random()*.3+.1,ph:Math.random()*Math.PI*2});function dr(){ctx.clearRect(0,0,c.width,c.height);for(var i=0;i<ps.length;i++){var p=ps[i],dx=mx-p.x,dy=my-p.y,dt=Math.sqrt(dx*dx+dy*dy);if(dt<220&&dt>0){var f=(220-dt)/220*.5;p.x-=dx/dt*f;p.y-=dy/dt*f}p.x+=p.vx;if(p.x<0)p.x=c.width;if(p.x>c.width)p.x=0;p.y+=p.vy;if(p.y<0)p.y=c.height;if(p.y>c.height)p.y=0;var al=p.o*(.6+.4*Math.sin(Date.now()/2000+p.ph));ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle='rgba(255,215,0,'+al+')';ctx.fill()}for(var i=0;i<ps.length;i++)for(var j=i+1;j<ps.length;j++){var a=ps[i],b=ps[j];var dx=a.x-b.x,dy=a.y-b.y,dt=Math.sqrt(dx*dx+dy*dy);if(dt<140){var dmx=mx-a.x,dmy=my-a.y,md=Math.sqrt(dmx*dmx+dmy*dmy);var al=(1-dt/140)*.04;if(md<220)al*=Math.min(3*(1-md/220),2.5);if(al>.003){ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.strokeStyle='rgba(255,215,0,'+al+')';ctx.lineWidth=.5;ctx.stroke()}}}requestAnimationFrame(dr)}dr()})();
 // ==================== MUSIC PLAYER ====================
-const playlist = [
+var playlist = [
     { src: 'lw/track2.mp3' }
 ];
-let currentTrack = 0;
-let isPlaying = false;
-let isRepeating = false;
-const audio = new Audio();
+var currentTrack = 0;
+var isPlaying = false;
+var isRepeating = false;
+var audio = new Audio();
 audio.volume = 0.08;
 try { document.body.appendChild(audio); } catch(e) {}
 function saveAudioState() {
@@ -529,15 +529,15 @@ audio.addEventListener('timeupdate', saveAudioState);
 audio.addEventListener('play', saveAudioState);
 audio.addEventListener('pause', saveAudioState);
 
-const playBtn = document.getElementById('mpPlay');
-const prevBtn = document.getElementById('mpPrev');
-const nextBtn = document.getElementById('mpNext');
-const repeatBtn = document.getElementById('mpRepeat');
-const barFill = document.getElementById('mpBarFill');
-const barThumb = document.getElementById('mpBarThumb');
-const currentTimeEl = document.getElementById('mpCurrent');
-const durationEl = document.getElementById('mpDuration');
-const barTrack = document.querySelector('.mp-bar-track');
+var playBtn = document.getElementById('mpPlay');
+var prevBtn = document.getElementById('mpPrev');
+var nextBtn = document.getElementById('mpNext');
+var repeatBtn = document.getElementById('mpRepeat');
+var barFill = document.getElementById('mpBarFill');
+var barThumb = document.getElementById('mpBarThumb');
+var currentTimeEl = document.getElementById('mpCurrent');
+var durationEl = document.getElementById('mpDuration');
+var barTrack = document.querySelector('.mp-bar-track');
 
 // ===== AUDIO SPECTRUM =====
 const spectrumCanvas = document.getElementById('mpSpectrum');
@@ -708,16 +708,19 @@ function startTrackFromSaved() {
     if (p) p.then(function() { isPlaying = true; playBtn.textContent = '⏸'; }).catch(function(e) { console.warn('audio play:', e); });
 }
 function initAudio() {
-    audio.src = playlist[0].src;
-    audio.load();
-    var p = audio.play();
-    if (p) p.then(function() { isPlaying = true; playBtn.textContent = '⏸'; }).catch(function(e) { console.warn('audio play:', e); });
-    currentTrack = 0;
-    drawSpectrum();
-    countValidTracks(function(valid) {
-        isRepeating = valid <= 1;
-        repeatBtn.classList.toggle('active', isRepeating);
-    });
+    try {
+        if (!playlist || !playlist.length || !playlist[0] || !playlist[0].src) return;
+        audio.src = playlist[0].src;
+        audio.load();
+        currentTrack = 0;
+        drawSpectrum();
+        countValidTracks(function(valid) {
+            isRepeating = valid <= 1;
+            if (repeatBtn) repeatBtn.classList.toggle('active', isRepeating);
+        });
+        var p = audio.play();
+        if (p) p.then(function() { isPlaying = true; if (playBtn) playBtn.textContent = '⏸'; }).catch(function(e) { console.warn('audio play:', e); });
+    } catch(e) { console.warn('initAudio:', e); }
 }
 
 </script>

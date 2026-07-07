@@ -71,7 +71,7 @@ body::before{content:'';position:fixed;top:-50%;left:-50%;width:200%;height:200%
 
 /* Status Badge */
 .status-wrap{text-align:center;margin-bottom:26px}
-.status-badge{display:inline-flex;align-items:center;gap:8px;padding:8px 24px;border-radius:50px;font-size:0.6rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;border:1px solid;transition:.4s}
+.status-badge{display:inline-flex;align-items:center;gap:8px;padding:10px 28px;border-radius:50px;font-size:0.7rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;border:1px solid;transition:.4s}
 .status-badge .dot{width:8px;height:8px;border-radius:50%;display:inline-block;animation:pulse 2s ease-in-out infinite}
 .status-badge.online{color:#22cc66;border-color:rgba(34,204,102,0.2);background:rgba(34,204,102,0.05);box-shadow:0 0 40px rgba(34,204,102,0.04)}
 .status-badge.online .dot{background:#22cc66;box-shadow:0 0 12px rgba(34,204,102,0.6)}
@@ -85,8 +85,8 @@ body::before{content:'';position:fixed;top:-50%;left:-50%;width:200%;height:200%
 .address-box{text-align:center;margin-bottom:24px;padding:16px;border-radius:14px;border:1px solid rgba(255,215,0,0.08);background:linear-gradient(135deg,rgba(255,215,0,0.03),rgba(255,136,0,0.015));position:relative;overflow:hidden}
 .address-box::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:conic-gradient(from 0deg at 50% 50%,transparent,rgba(255,215,0,0.02),transparent,rgba(255,215,0,0.02),transparent);animation:connSpin 6s linear infinite;pointer-events:none}
 @keyframes connSpin{to{transform:rotate(360deg)}}
-.address-box .label{font-size:0.4rem;letter-spacing:2px;text-transform:uppercase;color:#555570;margin-bottom:6px;font-weight:700;position:relative;z-index:1}
-.address-box .addr{position:relative;z-index:1;font-family:'Orbitron','Courier New',monospace;font-size:.85rem;color:#ffd700;letter-spacing:1px;word-break:break-all;cursor:pointer;transition:.3s;padding:6px 14px;border-radius:8px;display:inline-block}
+.address-box .label{font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:#555570;margin-bottom:6px;font-weight:700;position:relative;z-index:1}
+.address-box .addr{position:relative;z-index:1;font-family:'Orbitron','Courier New',monospace;font-size:1rem;color:#ffd700;letter-spacing:1px;word-break:break-all;cursor:pointer;transition:.3s;padding:6px 14px;border-radius:8px;display:inline-block}
 .address-box .addr:hover{background:rgba(255,215,0,0.06)}
 .address-box .addr.copied{background:rgba(34,204,102,0.1);color:#22cc66}
 
@@ -96,7 +96,7 @@ body::before{content:'';position:fixed;top:-50%;left:-50%;width:200%;height:200%
 .stat::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,215,0,0.06),transparent);opacity:0;transition:.3s}
 .stat:hover::before{opacity:1}
 .stat:hover{border-color:rgba(255,255,255,0.06);transform:translateY(-2px);box-shadow:0 6px 30px rgba(0,0,0,.2)}
-.stat .label{font-size:0.4rem;letter-spacing:2px;text-transform:uppercase;color:#555570;margin-bottom:8px;font-weight:700}
+.stat .label{font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:#555570;margin-bottom:8px;font-weight:700}
 .stat .value{font-size:1.2rem;font-weight:700;color:#e0e0f0;font-family:'Orbitron',sans-serif;letter-spacing:1px}
 .stat .value.gold{color:#ffd700;text-shadow:0 0 20px rgba(255,215,0,0.1)}
 .stat .value.green{color:#22cc66;text-shadow:0 0 20px rgba(34,204,102,0.1)}
@@ -107,18 +107,22 @@ body::before{content:'';position:fixed;top:-50%;left:-50%;width:200%;height:200%
 @keyframes barGlow{0%,100%{background-position:0% center}50%{background-position:100% center}}
 .map-display{display:flex;align-items:center;justify-content:center;gap:8px;color:#707090;font-size:0.7rem;margin-top:4px}
 
-/* Custom Text */
+/* Custom Text + Timer */
 .custom-box{margin-bottom:16px}
 .custom-box textarea{width:100%;padding:14px 16px;border-radius:12px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.015);color:#c0c0d0;font-size:0.8rem;font-family:'Tajawal','Inter',sans-serif;resize:vertical;min-height:60px;transition:.3s;outline:none}
 .custom-box textarea:focus{border-color:rgba(255,215,0,0.15)}
 .custom-box .copy-row{display:flex;gap:6px;margin-top:6px}
 .custom-box .copy-btn{flex:1;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:rgba(255,255,255,0.015);color:#707090;font-size:0.5rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:.3s;font-family:'Inter',sans-serif}
 .custom-box .copy-btn:hover{background:rgba(255,255,255,0.05);color:#e0e0f0;border-color:rgba(255,255,255,0.08)}
+.timer-label{font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:#555570;margin-bottom:10px;font-weight:700;text-align:center}
+.timer-countdown{font-size:1.8rem;font-weight:900;color:#ffd700;text-align:center;font-family:'Orbitron',sans-serif;letter-spacing:3px;text-shadow:0 0 30px rgba(255,215,0,0.15);animation:timerPulse 2s ease-in-out infinite;padding:10px 0 6px}
+.timer-countdown.over{color:#22cc66;text-shadow:0 0 30px rgba(34,204,102,0.15);animation:none}
+@keyframes timerPulse{0%,100%{opacity:1}50%{opacity:0.85}}
 
 /* Next Restart */
 .restart-box{background:rgba(255,68,68,0.03);border:1px solid rgba(255,68,68,0.08);border-radius:14px;padding:16px;text-align:center;position:relative;overflow:hidden}
 .restart-box::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,68,68,0.15),transparent)}
-.restart-box .label{font-size:0.4rem;letter-spacing:2px;text-transform:uppercase;color:#555570;margin-bottom:6px;font-weight:700}
+.restart-box .label{font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:#555570;margin-bottom:6px;font-weight:700}
 .restart-box .countdown{font-size:1.15rem;font-weight:700;color:#ff6644;font-family:'Orbitron',sans-serif;letter-spacing:2px;text-shadow:0 0 20px rgba(255,68,68,0.1)}
 .restart-box .countdown.over{color:#22cc66;text-shadow:0 0 20px rgba(34,204,102,0.1)}
 .loading{text-align:center;padding:60px;color:#454560;font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;animation:pulse 2s ease-in-out infinite}
@@ -295,8 +299,15 @@ body{font-size:16px;-webkit-text-size-adjust:100%}
             <div class="stat"><div class="label" id="uptimeLabel">Uptime</div><div class="value green" id="uptimeDisplay">—</div><div class="map-display"><span class="map-icon">🗺️</span><span id="mapName">—</span></div></div>
         </div>
         <div class="custom-box" id="customBox">
-            <textarea id="customTextArea" readonly placeholder="—"></textarea>
-            <div class="copy-row"><button class="copy-btn" onclick="copyText()">📋 Copy</button></div>
+            <div id="timerDisplay" style="display:none">
+                <div class="timer-label" id="timerLabel">⏳ Countdown</div>
+                <div class="timer-countdown" id="timerCountdown">—</div>
+            </div>
+            <div id="noTimer" style="display:none">
+                <div class="timer-label" style="color:rgba(85,85,112,0.4);text-align:center;padding:16px">—</div>
+            </div>
+            <textarea id="customTextArea" readonly placeholder="—" style="display:none"></textarea>
+            <div class="copy-row" style="display:none"><button class="copy-btn" onclick="copyText()">📋 Copy</button></div>
         </div>
         <div class="restart-box" id="restartBox" style="display:none">
             <div class="label" id="restartLabel">Next Restart</div>
@@ -381,7 +392,7 @@ var lang = {
 };
 var BM_ID='39732635',BM_API='https://api.battlemetrics.com/servers/'+BM_ID,FB='https://webb-d05d3-default-rtdb.firebaseio.com';
 var currentLang=localStorage.getItem('bhLang')||'en';
-var lastData=null,countdownTimer=null;
+var lastData=null,countdownTimer=null,timerData=null,timerInterval=null;
 
 function toggleMenu(){
     var m=document.getElementById('menuOverlay'),b=document.getElementById('menuBackdrop'),h=document.getElementById('hamburger');
@@ -454,6 +465,48 @@ function fetchBM(){
 function fetchFB(){
     var x=new XMLHttpRequest();x.open('GET',FB+'/customConfig.json');
     x.onload=function(){try{var d=JSON.parse(x.responseText);if(d&&lastData){lastData.customText=d.customText||'';lastData.nextRestart=d.nextRestart||null;renderStatus()}}catch(e){}};x.send()
+}
+function fetchTimer() {
+    var x = new XMLHttpRequest();
+    x.open('GET', FB + '/timerConfig.json');
+    x.onload = function() {
+        try {
+            var d = JSON.parse(x.responseText);
+            if (d && d.active && d.endTime) {
+                timerData = d;
+                document.getElementById('timerDisplay').style.display = '';
+                document.getElementById('noTimer').style.display = 'none';
+                if (timerInterval) clearInterval(timerInterval);
+                updateTimerDisplay();
+                timerInterval = setInterval(updateTimerDisplay, 1000);
+            } else {
+                timerData = null;
+                document.getElementById('timerDisplay').style.display = 'none';
+                document.getElementById('noTimer').style.display = '';
+                if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+            }
+        } catch(e) {}
+    };
+    x.send();
+}
+function updateTimerDisplay() {
+    if (!timerData || !timerData.active) return;
+    var rem = timerData.endTime - Date.now();
+    var isAr = currentLang === 'ar';
+    var titleEl = document.getElementById('timerLabel');
+    var countEl = document.getElementById('timerCountdown');
+    titleEl.textContent = '⏳ ' + (timerData.title || (isAr ? 'العد التنازلي' : 'Countdown'));
+    if (rem <= 0) {
+        countEl.textContent = isAr ? '✅ انتهى' : '✅ Ended';
+        countEl.className = 'timer-countdown over';
+    } else {
+        var days = Math.floor(rem / 86400000);
+        var hours = Math.floor((rem % 86400000) / 3600000);
+        var minutes = Math.floor((rem % 3600000) / 60000);
+        var seconds = Math.floor((rem % 60000) / 1000);
+        countEl.textContent = days + 'd ' + ('0' + hours).slice(-2) + 'h ' + ('0' + minutes).slice(-2) + 'm ' + ('0' + seconds).slice(-2) + 's';
+        countEl.className = 'timer-countdown';
+    }
 }
 // ==================== MUSIC PLAYER ====================
 const playlist = [
@@ -664,7 +717,7 @@ function initAudio() {
 }
 
 
-renderStatus();fetchBM();setInterval(fetchBM,60000);setInterval(fetchFB,30000);
+renderStatus();fetchBM();fetchTimer();setInterval(fetchBM,60000);setInterval(fetchFB,30000);setInterval(fetchTimer,30000);
 document.querySelectorAll('[data-i18n]').forEach(function(el){var textSpan=el.querySelector('.text');if(textSpan)textSpan.setAttribute('data-i18n-orig',textSpan.textContent);else el.setAttribute('data-i18n-orig',el.textContent)});applyNavLang();
 </script>
 </body>
