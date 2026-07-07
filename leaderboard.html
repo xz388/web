@@ -343,6 +343,7 @@ body { font-size: 16px; -webkit-text-size-adjust: 100%; }
 #tapOverlay{position:fixed;inset:0;z-index:10000;background:radial-gradient(ellipse at 50% 50%,rgba(10,10,30,0.95),rgba(5,5,10,0.98));backdrop-filter:blur(20px);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:opacity .8s ease,visibility .8s ease}
 #tapOverlay.hidden{opacity:0;visibility:hidden;pointer-events:none}
 @keyframes tapPulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.02);opacity:.85}}
+html[dir="rtl"] { font-size: 18px; }
 </style>
 </head>
 <body>
@@ -723,8 +724,6 @@ function initAudio() {
     } catch(e) { console.warn('initAudio:', e); }
 }
 
-</script>
-<script>
 function toggleMenu() {
     var m = document.getElementById('menuOverlay');
     var b = document.getElementById('menuBackdrop');
