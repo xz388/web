@@ -216,6 +216,20 @@ canvas{position:absolute;inset:0;pointer-events:none;z-index:0}
 .mp-spectrum { width: 100%; height: 60px; border-radius: 12px; background: rgba(0,0,0,0.25); flex-shrink: 0; }
 @keyframes fu{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 
+/* ========== LEGIBILITY ========== */
+body{font-size:16px;-webkit-text-size-adjust:100%}
+.nav-btn{font-size:0.6rem}
+.menu-item{font-size:0.6rem}
+@media(max-width:480px){
+    .nav-btn{font-size:0.55rem;padding:5px 8px;letter-spacing:1px}
+    .menu-item{font-size:0.55rem}
+    .nav-center{gap:2px}
+    .top-nav{padding:6px 10px}
+}
+@media(max-width:380px){
+    .nav-btn{font-size:0.45rem;padding:4px 5px;letter-spacing:.5px}
+}
+
 @media (max-width: 600px) {
     .music-player { padding: 14px 16px; gap: 12px; }
     .mp-progress { gap: 6px; }
@@ -391,8 +405,8 @@ var lang = {
         navHome: 'الرئيسية',
         navLeaderboard: 'المتصدرين',
         navServer: 'السيرفر',
-        navWorldRecords: 'سجلات العالم',
-        menuWorldRecords: 'سجلات العالم',
+        navWorldRecords: 'الأرقام القياسية العالمية',
+        menuWorldRecords: 'الأرقام القياسية العالمية',
         menuArchive: 'الأرشيف',
         menuLanguage: 'اللغة'
     }
@@ -636,26 +650,18 @@ function startTrackFromSaved() {
     if (p) p.then(function() { isPlaying = true; playBtn.textContent = '⏸'; }).catch(function(e) { console.warn('audio play:', e); });
 }
 function initAudio() {
-    audio.src = playlist[1].src;
+    audio.src = playlist[0].src;
     audio.load();
     var p = audio.play();
     if (p) p.then(function() { isPlaying = true; playBtn.textContent = '⏸'; }).catch(function(e) { console.warn('audio play:', e); });
-    currentTrack = 1;
+    currentTrack = 0;
     drawSpectrum();
     countValidTracks(function(valid) {
         isRepeating = valid <= 1;
         repeatBtn.classList.toggle('active', isRepeating);
     });
 }
-document.getElementById('tapOverlay').addEventListener('click', function() {
-    this.classList.add('hidden');
-    drawSpectrum();
-    countValidTracks(function(valid) {
-        isRepeating = valid <= 1;
-        repeatBtn.classList.toggle('active', isRepeating);
-        startTrackFromSaved();
-    });
-    });
+
 // store original text for nav/menu
 (function(){
 document.querySelectorAll('[data-i18n]').forEach(function(el) {
@@ -689,7 +695,7 @@ function setLang(lang) {
     applyNavLang();
     render();
     updateQuote();
-    setTimeout(function(){var audio=document.querySelector('audio');if(audio&&audio.readyState>=2)audio.play().catch(function(){});else if(audio){audio.addEventListener('canplay',function handler(){audio.play().catch(function(){});audio.removeEventListener('canplay',handler)})}},300);
+    initAudio();
 }
 function handleTap(){setLang(currentLang);}
 function toggleLang() {

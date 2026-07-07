@@ -279,6 +279,20 @@ canvas{position:absolute;inset:0;pointer-events:none;z-index:0}
 .mp-spectrum { width: 100%; height: 60px; border-radius: 12px; background: rgba(0,0,0,0.25); flex-shrink: 0; }
 @keyframes fu{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 
+/* ========== LEGIBILITY ========== */
+body { font-size: 16px; -webkit-text-size-adjust: 100%; }
+.nav-btn { font-size: 0.6rem; }
+.menu-item { font-size: 0.6rem; }
+@media(max-width:480px){
+    .nav-btn { font-size: 0.55rem; padding: 5px 8px; letter-spacing: 1px; }
+    .menu-item { font-size: 0.55rem; }
+    .nav-center { gap: 2px; }
+    .top-nav { padding: 6px 10px; }
+}
+@media(max-width:380px){
+    .nav-btn { font-size: 0.45rem; padding: 4px 5px; letter-spacing: 0.5px; }
+}
+
 @media (max-width: 600px) {
     .music-player { padding: 14px 16px; gap: 12px; }
     .mp-progress { gap: 6px; }
@@ -419,6 +433,7 @@ var lang = {
         champion: '🏆 Champion Wins',
         mvp: '👑 MVP',
         mmr: '⚡ MMR',
+        mmrTotal: '⚡ MMR (Total)',
         goals: '⚽ Goals',
         assists: '🎯 Assists',
         saves: '🛡️ Saves',
@@ -443,6 +458,7 @@ var lang = {
         champion: '🏆 بطل البطولة',
         mvp: '👑 أفضل لاعب',
         mmr: '⚡ النقاط',
+        mmrTotal: '⚡ إجمالي النقاط',
         goals: '⚽ أهداف',
         assists: '🎯 تمريرات',
         saves: '🛡️ تصديات',
@@ -454,8 +470,8 @@ var lang = {
         navHome: 'الرئيسية',
         navLeaderboard: 'المتصدرين',
         navServer: 'السيرفر',
-        navWorldRecords: 'سجلات العالم',
-        menuWorldRecords: 'سجلات العالم',
+        navWorldRecords: 'الأرقام القياسية العالمية',
+        menuWorldRecords: 'الأرقام القياسية العالمية',
         menuArchive: 'الأرشيف',
         menuLanguage: 'اللغة',
         tapStart: 'لبدء التجربة',
@@ -468,7 +484,7 @@ function gd(){try{var d=JSON.parse(localStorage.getItem('bhLeaderboard'));if(Arr
 function mr(p){return(p.goals||0)*100+(p.assists||0)*50+(p.saves||0)*50}
 function rp(pl){if(!pl||!pl.length)return [];var s=pl.slice().sort(function(a,b){if(a.champion!==b.champion)return b.champion-a.champion;if(a.mvp!==b.mvp)return b.mvp-a.mvp;var ma=mr(a),mb=mr(b);return ma!==mb?mb-ma:0});var r=[],cr=1;for(var i=0;i<s.length;i++){if(i>0&&!(s[i].champion===s[i-1].champion&&s[i].mvp===s[i-1].mvp&&mr(s[i])===mr(s[i-1])))cr=i+1;r.push({player:s[i],rank:cr})}return r}
 var ML=['','🥇','🥈','🥉'];
-function sm(r){var isAr=currentLang==='ar';var l=isAr?lang.ar:lang.en;var p=r.player,m=mr(p);document.getElementById('mcon').innerHTML='<div class="mrt">'+(r.rank<=3?ML[r.rank]:'')+' '+(r.rank===1?l.rank1:r.rank===2?l.rank2:r.rank===3?l.rank3:'#'+r.rank)+'</div><h2>'+p.name+'</h2><div class="sn">'+(p.nameAr||'')+'</div><div class="ms"><div class="mr"><span class="lb">'+l.champLabel+'</span><span class="vl gd">x'+p.champion+'</span></div><div class="mr"><span class="lb">'+l.mvpLabel+'</span><span class="vl pu">x'+p.mvp+'</span></div><div class="md"></div><div class="mr"><span class="lb">⚡ MMR (Total)</span><span class="vl bl">'+m+'</span></div></div><div class="md"></div><div style="font-size:.6rem;color:#4848aa;letter-spacing:1px;margin:10px 0 6px;text-align:center">'+l.breakdown+'</div><div class="mmx"><div class="mi2"><div class="lb">'+l.goals+'</div><div class="vl">'+(p.goals||0)+'</div></div><div class="mi2"><div class="lb">'+l.assists+'</div><div class="vl">'+(p.assists||0)+'</div></div><div class="mi2"><div class="lb">'+l.saves+'</div><div class="vl">'+(p.saves||0)+'</div></div></div><div class="mtp">'+l.goalPt+' · '+l.assistPt+' · '+l.savePt+'</div>';document.getElementById('mo').classList.add('sh')}
+function sm(r){var isAr=currentLang==='ar';var l=isAr?lang.ar:lang.en;var p=r.player,m=mr(p);document.getElementById('mcon').innerHTML='<div class="mrt">'+(r.rank<=3?ML[r.rank]:'')+' '+(r.rank===1?l.rank1:r.rank===2?l.rank2:r.rank===3?l.rank3:'#'+r.rank)+'</div><h2>'+p.name+'</h2><div class="sn">'+(p.nameAr||'')+'</div><div class="ms"><div class="mr"><span class="lb">'+l.champLabel+'</span><span class="vl gd">x'+p.champion+'</span></div><div class="mr"><span class="lb">'+l.mvpLabel+'</span><span class="vl pu">x'+p.mvp+'</span></div><div class="md"></div><div class="mr"><span class="lb">'+l.mmrTotal+'</span><span class="vl bl">'+m+'</span></div></div><div class="md"></div><div style="font-size:.6rem;color:#4848aa;letter-spacing:1px;margin:10px 0 6px;text-align:center">'+l.breakdown+'</div><div class="mmx"><div class="mi2"><div class="lb">'+l.goals+'</div><div class="vl">'+(p.goals||0)+'</div></div><div class="mi2"><div class="lb">'+l.assists+'</div><div class="vl">'+(p.assists||0)+'</div></div><div class="mi2"><div class="lb">'+l.saves+'</div><div class="vl">'+(p.saves||0)+'</div></div></div><div class="mtp">'+l.goalPt+' · '+l.assistPt+' · '+l.savePt+'</div>';document.getElementById('mo').classList.add('sh')}
 function render(){var isAr=currentLang==='ar';var l=isAr?lang.ar:lang.en;var data=gd(),ranked=rp(data);var st=document.getElementById('pst'),lw=document.getElementById('lw');var top3=ranked.slice(0,3);st.innerHTML=top3.length?[top3[1]||null,top3[0],top3[2]||null].map(function(r){if(!r)return'<div class="pc" style="visibility:hidden"></div>';var p=r.player,c='pc p'+r.rank;var t=r.rank===1?l.rank1:r.rank===2?l.rank2:l.rank3;var na=p.name+(p.nameAr?' <span class="ar">('+p.nameAr+')</span>':'');var m=mr(p);return '<div class="'+c+'" data-idx="'+ranked.indexOf(r)+'"><div class="pb">'+(r.rank===1?'<div class="crn">👑</div>':'')+'<div class="glow"></div>'+(r.rank===1?'<div class="shimmer"></div>':'')+'<div class="cr"></div><div class="ff"></div><div class="sf"></div><div class="sh"></div><div class="px"><span class="pm">'+ML[r.rank]+'</span><span class="pt">'+t+'</span><span class="pn">'+na+'</span><div class="ps"><span>'+l.champion+' <span class="nm">'+p.champion+'</span></span></div><div class="ps"><span>'+l.mvp+' <span class="nm">'+p.mvp+'</span></span><span>'+l.mmr+' <span class="nm">'+m+'</span></span></div></div></div><div class="sl">'+(r.rank===1?'C H A M P I O N':r.rank===2?'R U N N E R   U P':'T H I R D   P L A C E')+'</div><div class="pbse"></div></div>'}).join(''):'';var rest=ranked.slice(3);if(!ranked.length){lw.innerHTML='<div class="emp"><span class="bg">⏳</span><div class="tx">'+l.loading+'</div></div>';return}lw.innerHTML=rest.map(function(r){var p=r.player,m=mr(p);return '<div class="pcd" data-idx="'+ranked.indexOf(r)+'"><div class="rb">'+r.rank+'</div><div class="pi"><div><span class="nm">'+p.name+(p.nameAr?' <span class="ar">('+p.nameAr+')</span>':'')+'</span></div><div class="sr"><span class="sc cp">'+l.champion+' <span class="nm">'+p.champion+'</span></span><span class="sc mv">'+l.mvp+' <span class="nm">'+p.mvp+'</span></span><span class="sc mr">'+l.mmr+' <span class="nm">'+m+'</span></span></div></div></div>'}).join('');document.querySelectorAll('.pcd').forEach(function(c,i){c.style.animation='none';void c.offsetHeight;c.style.animation='cs .5s ease '+(i*.04)+'s both'});document.querySelectorAll('.pc:not([style*="visibility"]),.pcd').forEach(function(el){el.addEventListener('click',function(e){var idx=parseInt(this.getAttribute('data-idx'));var r2=rp(gd());if(r2[idx])sm(r2[idx])})})}
 document.getElementById('mc').addEventListener('click',function(){document.getElementById('mo').classList.remove('sh')});
 document.getElementById('mo').addEventListener('click',function(e){if(e.target===this)this.classList.remove('sh')});
@@ -692,26 +708,18 @@ function startTrackFromSaved() {
     if (p) p.then(function() { isPlaying = true; playBtn.textContent = '⏸'; }).catch(function(e) { console.warn('audio play:', e); });
 }
 function initAudio() {
-    audio.src = playlist[1].src;
+    audio.src = playlist[0].src;
     audio.load();
     var p = audio.play();
     if (p) p.then(function() { isPlaying = true; playBtn.textContent = '⏸'; }).catch(function(e) { console.warn('audio play:', e); });
-    currentTrack = 1;
+    currentTrack = 0;
     drawSpectrum();
     countValidTracks(function(valid) {
         isRepeating = valid <= 1;
         repeatBtn.classList.toggle('active', isRepeating);
     });
 }
-document.getElementById('tapOverlay').addEventListener('click', function() {
-    this.classList.add('hidden');
-    drawSpectrum();
-    countValidTracks(function(valid) {
-        isRepeating = valid <= 1;
-        repeatBtn.classList.toggle('active', isRepeating);
-        startTrackFromSaved();
-    });
-});
+
 </script>
 <script>
 function toggleMenu() {
@@ -743,7 +751,7 @@ function setLang(lang) {
     document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
     applyNavLang();
     render();
-    setTimeout(function(){var audio=document.querySelector('audio');if(audio&&audio.readyState>=2)audio.play().catch(function(){});else if(audio){audio.addEventListener('canplay',function handler(){audio.play().catch(function(){});audio.removeEventListener('canplay',handler)})}},300);
+    initAudio();
 }
 function handleTap(){setLang(currentLang);}
 function toggleLang() {

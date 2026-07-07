@@ -564,6 +564,20 @@
             .best-player-banner #bestPlayerName { font-size:0.95rem !important; }
         }
 
+        /* ========== LEGIBILITY ========== */
+        body { font-size: 16px; -webkit-text-size-adjust: 100%; }
+        .nav-btn { font-size: 0.6rem; }
+        .menu-item { font-size: 0.6rem; }
+        @media (max-width: 480px) {
+            .nav-btn { font-size: 0.55rem; padding: 5px 8px; letter-spacing: 1px; }
+            .menu-item { font-size: 0.55rem; }
+            .nav-center { gap: 2px; }
+            .top-nav { padding: 6px 10px; }
+        }
+        @media (max-width: 380px) {
+            .nav-btn { font-size: 0.45rem; padding: 4px 5px; letter-spacing: 0.5px; }
+        }
+
         /* Regular phones */
         @media (min-width: 401px) and (max-width: 600px) {
             .container { padding: 0 16px; }
@@ -1272,8 +1286,8 @@ const lang = {
         navHome: 'الرئيسية',
         navLeaderboard: 'المتصدرين',
         navServer: 'السيرفر',
-        navWorldRecords: 'سجلات العالم',
-        menuWorldRecords: 'سجلات العالم',
+        navWorldRecords: 'الأرقام القياسية العالمية',
+        menuWorldRecords: 'الأرقام القياسية العالمية',
         menuArchive: 'الأرشيف',
         menuLanguage: 'اللغة',
         pollVotes: 'أصوات',
@@ -1295,8 +1309,7 @@ function setLang(lang) {
     if (lt) lt.textContent = lang === 'ar' ? 'EN' : 'AR';
     document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
     applyLang();
-    // Start music
-    setTimeout(startAudio, 300);
+    setTimeout(initAudio, 200);
 }
 
 function startAudio() {
@@ -1633,15 +1646,7 @@ function initAudio() {
         repeatBtn.classList.toggle('active', isRepeating);
     });
 }
-document.getElementById('tapOverlay').addEventListener('click', function() {
-    this.classList.add('hidden');
-    drawSpectrum();
-    countValidTracks(function(valid) {
-        isRepeating = valid <= 1;
-        repeatBtn.classList.toggle('active', isRepeating);
-        startTrackFromSaved();
-    });
-});
+
 
 // ==================== UPDATES SYSTEM ====================
 const FB_UPDATES_URL = 'https://webb-d05d3-default-rtdb.firebaseio.com/updates.json';

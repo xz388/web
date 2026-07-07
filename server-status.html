@@ -201,6 +201,20 @@ body::before{content:'';position:fixed;top:-50%;left:-50%;width:200%;height:200%
 #tapOverlay.hidden{opacity:0;visibility:hidden;pointer-events:none}
 @keyframes tapPulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.02);opacity:.85}}
 
+/* ========== LEGIBILITY ========== */
+body{font-size:16px;-webkit-text-size-adjust:100%}
+.nav-btn{font-size:0.6rem}
+.menu-item{font-size:0.6rem}
+@media(max-width:480px){
+    .nav-btn{font-size:0.55rem;padding:5px 8px;letter-spacing:1px}
+    .menu-item{font-size:0.55rem}
+    .nav-center{gap:2px}
+    .top-nav{padding:6px 10px}
+}
+@media(max-width:380px){
+    .nav-btn{font-size:0.45rem;padding:4px 5px;letter-spacing:.5px}
+}
+
 @media(max-width:600px){
     .stats{grid-template-columns:1fr}
     .card{padding:20px 18px}
@@ -359,8 +373,8 @@ var lang = {
         navHome: 'الرئيسية',
         navLeaderboard: 'المتصدرين',
         navServer: 'السيرفر',
-        navWorldRecords: 'سجلات العالم',
-        menuWorldRecords: 'سجلات العالم',
+        navWorldRecords: 'الأرقام القياسية العالمية',
+        menuWorldRecords: 'الأرقام القياسية العالمية',
         menuArchive: 'الأرشيف',
         menuLanguage: 'اللغة'
     }
@@ -377,7 +391,7 @@ function closeMenu(){
     document.getElementById('menuOverlay').classList.remove('open');document.getElementById('menuBackdrop').classList.remove('show');
     document.getElementById('hamburger').classList.remove('active');document.body.classList.remove('no-scroll')
 }
-function setLang(lang){currentLang=lang;localStorage.setItem('bhLang',lang);document.getElementById('tapOverlay').classList.add('hidden');document.documentElement.dir=lang==='ar'?'rtl':'ltr';applyNavLang();renderStatus();setTimeout(function(){var audio=document.querySelector('audio');if(audio&&audio.readyState>=2)audio.play().catch(function(){});else if(audio){audio.addEventListener('canplay',function handler(){audio.play().catch(function(){});audio.removeEventListener('canplay',handler)})}},300)}
+function setLang(lang){currentLang=lang;localStorage.setItem('bhLang',lang);document.getElementById('tapOverlay').classList.add('hidden');document.documentElement.dir=lang==='ar'?'rtl':'ltr';applyNavLang();renderStatus();setTimeout(initAudio,200)}
 function handleTap(){setLang(currentLang)}
 function toggleLang(){closeMenu();currentLang=currentLang==='en'?'ar':'en';localStorage.setItem('bhLang',currentLang);document.documentElement.dir=currentLang==='ar'?'rtl':'ltr';applyNavLang();renderStatus()}
 
@@ -637,18 +651,18 @@ function startTrackFromSaved() {
     if (p) p.then(function() { isPlaying = true; playBtn.textContent = '⏸'; }).catch(function(e) { console.warn('audio play:', e); });
 }
 function initAudio() {
-    audio.src = playlist[1].src;
+    audio.src = playlist[0].src;
     audio.load();
     var p = audio.play();
     if (p) p.then(function() { isPlaying = true; playBtn.textContent = '⏸'; }).catch(function(e) { console.warn('audio play:', e); });
-    currentTrack = 1;
+    currentTrack = 0;
     drawSpectrum();
     countValidTracks(function(valid) {
         isRepeating = valid <= 1;
         repeatBtn.classList.toggle('active', isRepeating);
     });
 }
-initAudio();
+
 
 renderStatus();fetchBM();setInterval(fetchBM,60000);setInterval(fetchFB,30000);
 document.querySelectorAll('[data-i18n]').forEach(function(el){var textSpan=el.querySelector('.text');if(textSpan)textSpan.setAttribute('data-i18n-orig',textSpan.textContent);else el.setAttribute('data-i18n-orig',el.textContent)});applyNavLang();
