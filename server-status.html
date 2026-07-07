@@ -114,7 +114,7 @@ body::before{content:'';position:fixed;top:-50%;left:-50%;width:200%;height:200%
 .custom-box .copy-row{display:flex;gap:6px;margin-top:6px}
 .custom-box .copy-btn{flex:1;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:rgba(255,255,255,0.015);color:#707090;font-size:0.5rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:.3s;font-family:'Inter',sans-serif}
 .custom-box .copy-btn:hover{background:rgba(255,255,255,0.05);color:#e0e0f0;border-color:rgba(255,255,255,0.08)}
-.timer-label{font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:#555570;margin-bottom:10px;font-weight:700;text-align:center}
+.timer-label{font-size:0.9rem;letter-spacing:2px;text-transform:uppercase;color:#8888bb;margin-bottom:10px;font-weight:700;text-align:center}
 .timer-countdown{font-size:1.8rem;font-weight:900;color:#ffd700;text-align:center;font-family:'Orbitron',sans-serif;letter-spacing:3px;text-shadow:0 0 30px rgba(255,215,0,0.15);animation:timerPulse 2s ease-in-out infinite;padding:10px 0 6px}
 .timer-countdown.over{color:#22cc66;text-shadow:0 0 30px rgba(34,204,102,0.15);animation:none}
 @keyframes timerPulse{0%,100%{opacity:1}50%{opacity:0.85}}
@@ -498,7 +498,7 @@ function updateTimerDisplay() {
     var countEl = document.getElementById('timerCountdown');
     titleEl.textContent = '⏳ ' + (timerData.title || (isAr ? 'العد التنازلي' : 'Countdown'));
     if (rem <= 0) {
-        countEl.textContent = isAr ? '✅ انتهى' : '✅ Ended';
+        countEl.textContent = '0d 00h 00m 00s';
         countEl.className = 'timer-countdown over';
     } else {
         var days = Math.floor(rem / 86400000);
