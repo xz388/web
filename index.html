@@ -15,7 +15,7 @@
         }
 
         /* ===== TOP NAV ===== */
-        .top-nav{position:fixed;top:0;left:0;right:0;z-index:900;display:flex;align-items:center;justify-content:center;padding:8px 14px;background:rgba(5,5,10,0.82);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,0.04)}
+        .top-nav{position:fixed;direction:ltr !important;top:0;left:0;right:0;z-index:900;display:flex;align-items:center;justify-content:center;padding:8px 14px;background:rgba(5,5,10,0.82);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,0.04)}
         .nav-inner{max-width:1000px;width:100%;display:flex;align-items:center;position:relative;justify-content:center;min-height:34px}
         .hamburger{position:absolute;left:0;width:34px;height:34px;display:flex;flex-direction:column;justify-content:center;align-items:center;cursor:pointer;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);border-radius:8px;transition:.3s;flex-shrink:0;z-index:2}
         .hamburger:hover{background:rgba(255,255,255,0.06);border-color:rgba(255,215,0,0.15)}
@@ -32,9 +32,9 @@
         .lang-btn:hover{background:rgba(255,255,255,0.06);color:#ffd700;border-color:rgba(255,215,0,0.15);transform:translateY(-1px)}
 
         /* ===== MENU OVERLAY (slides from left) ===== */
-        .menu-backdrop{position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:998;background:rgba(0,0,0,0.5);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:.4s}
+        .menu-backdrop{position:fixed;direction:ltr;top:0;left:0;width:100vw;height:100vh;z-index:998;background:rgba(0,0,0,0.5);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:.4s}
         .menu-backdrop.show{opacity:1;pointer-events:auto}
-        .menu-overlay{position:fixed;top:0;left:-75%;width:75%;max-width:320px;min-width:240px;height:100vh;z-index:999;background:linear-gradient(170deg,rgba(8,8,22,0.98),rgba(15,10,30,0.97));-webkit-backdrop-filter:blur(28px);backdrop-filter:blur(28px);border-right:1px solid rgba(255,255,255,0.03);transition:.45s cubic-bezier(.22,1,.36,1);padding:68px 16px 20px;overflow-y:auto}
+        .menu-overlay{position:fixed;direction:ltr;top:0;left:-75%;width:75%;max-width:320px;min-width:240px;height:100vh;z-index:999;background:linear-gradient(170deg,rgba(8,8,22,0.98),rgba(15,10,30,0.97));-webkit-backdrop-filter:blur(28px);backdrop-filter:blur(28px);border-right:1px solid rgba(255,255,255,0.03);transition:.45s cubic-bezier(.22,1,.36,1);padding:68px 16px 20px;overflow-y:auto}
         .menu-overlay.open{left:0}
         .menu-overlay::before{content:'';position:fixed;top:-50%;right:-50%;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(255,215,0,0.04),transparent 60%);pointer-events:none;z-index:-1;animation:menuGlow 6s ease-in-out infinite alternate}
         .menu-overlay::after{content:'';position:fixed;bottom:-30%;left:-30%;width:250px;height:250px;border-radius:50%;background:radial-gradient(circle,rgba(100,50,255,0.03),transparent 60%);pointer-events:none;z-index:-1;animation:menuGlow2 8s ease-in-out infinite alternate}
@@ -806,12 +806,15 @@
             .mp-vol-slider { width: 40px; }
             .mp-spectrum { height: 50px; }
         }
+        @media(max-width:500px){
+            .nav-btn{font-size:0.38rem;padding:4px 6px;letter-spacing:0.8px}
+        }
     </style>
 </head>
 <body>
 
 <!-- ===== TOP NAV ===== -->
-<div class="top-nav">
+<div class="top-nav" dir="ltr">
     <div class="nav-inner">
         <div class="hamburger" id="hamburger" onclick="toggleMenu()">
             <span></span><span></span><span></span>
@@ -893,10 +896,10 @@
         <div style="position:relative;z-index:1;display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;">
             <span style="font-size:1.8rem;line-height:1;">👑</span>
             <div>
-                <div style="font-size:0.65rem;color:#8888bb;letter-spacing:3px;text-transform:uppercase;font-weight:600;">🏆 The Best Player Right Now</div>
+                <div data-i18n="bestPlayer" style="font-size:0.65rem;color:#8888bb;letter-spacing:3px;text-transform:uppercase;font-weight:600;">🏆 The Best Player Right Now</div>
                 <div id="bestPlayerName" style="font-family:'Orbitron',monospace;font-size:1.2rem;color:#ffd700;letter-spacing:2px;margin-top:4px;text-shadow:0 0 30px rgba(255,215,0,0.1);"></div>
             </div>
-            <a href="leaderboard.html" onclick="try{localStorage.setItem('bhFromInternal','1')}catch(e){}" style="padding:8px 20px;border-radius:8px;border:1px solid rgba(255,215,0,0.2);background:rgba(255,215,0,0.05);color:#ffd700;text-decoration:none;font-size:0.65rem;font-weight:600;letter-spacing:1px;transition:0.3s;">View Leaderboard →</a>
+            <a data-i18n="viewLeaderboard" href="leaderboard.html" onclick="try{localStorage.setItem('bhFromInternal','1')}catch(e){}" style="padding:8px 20px;border-radius:8px;border:1px solid rgba(255,215,0,0.2);background:rgba(255,215,0,0.05);color:#ffd700;text-decoration:none;font-size:0.65rem;font-weight:600;letter-spacing:1px;transition:0.3s;">View Leaderboard →</a>
         </div>
     </div>
 
@@ -1278,7 +1281,8 @@ function setLang(lang) {
 
 function startAudio() {
     var audio = document.querySelector('audio');
-    if (audio) { audio.play().catch(function(){}); }
+    if (audio && audio.readyState >= 2) { audio.play().catch(function(){}); }
+    else if (audio) { audio.addEventListener('canplay', function handler(){ audio.play().catch(function(){}); audio.removeEventListener('canplay', handler); }); }
 }
 
 function applyLang() {

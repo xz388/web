@@ -10,7 +10,7 @@
 *{margin:0;padding:0;box-sizing:border-box;-webkit-font-smoothing:antialiased}
 
 /* ===== TOP NAV ===== */
-.top-nav{position:fixed;top:0;left:0;right:0;z-index:900;display:flex;align-items:center;justify-content:center;padding:8px 14px;background:rgba(5,5,10,0.82);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,0.04)}
+.top-nav{position:fixed;direction:ltr !important;top:0;left:0;right:0;z-index:900;display:flex;align-items:center;justify-content:center;padding:8px 14px;background:rgba(5,5,10,0.82);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,0.04)}
 .nav-inner{max-width:1000px;width:100%;display:flex;align-items:center;position:relative;justify-content:center;min-height:34px}
 .hamburger{position:absolute;left:0;width:34px;height:34px;display:flex;flex-direction:column;justify-content:center;align-items:center;cursor:pointer;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);border-radius:8px;transition:.3s;flex-shrink:0;z-index:2}
 .hamburger:hover{background:rgba(255,255,255,0.06);border-color:rgba(255,215,0,0.15)}
@@ -29,7 +29,7 @@
 /* ===== MENU OVERLAY (slides from left) ===== */
 .menu-backdrop{position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:998;background:rgba(0,0,0,0.5);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:.4s}
 .menu-backdrop.show{opacity:1;pointer-events:auto}
-.menu-overlay{position:fixed;top:0;left:-75%;width:75%;max-width:320px;min-width:240px;height:100vh;z-index:999;background:linear-gradient(170deg,rgba(8,8,22,0.98),rgba(15,10,30,0.97));-webkit-backdrop-filter:blur(28px);backdrop-filter:blur(28px);border-right:1px solid rgba(255,255,255,0.03);transition:.45s cubic-bezier(.22,1,.36,1);padding:68px 16px 20px;overflow-y:auto}
+.menu-overlay{position:fixed;top:0;left:-75%;width:75%;max-width:320px;min-width:240px;height:100vh;z-index:999;background:linear-gradient(170deg,rgba(8,8,22,0.98),rgba(15,10,30,0.97));-webkit-backdrop-filter:blur(28px);backdrop-filter:blur(28px);border-right:1px solid rgba(255,255,255,0.03);transition:.45s cubic-bezier(.22,1,.36,1);padding:68px 16px 20px;overflow-y:auto;direction:ltr}
 .menu-overlay::before{content:'';position:fixed;top:-50%;right:-50%;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(255,215,0,0.04),transparent 60%);pointer-events:none;z-index:-1;animation:menuGlow 6s ease-in-out infinite alternate}
 .menu-overlay::after{content:'';position:fixed;bottom:-30%;left:-30%;width:250px;height:250px;border-radius:50%;background:radial-gradient(circle,rgba(100,50,255,0.03),transparent 60%);pointer-events:none;z-index:-1;animation:menuGlow2 8s ease-in-out infinite alternate}
 @keyframes menuGlow{0%{transform:translate(0,0) scale(1)}100%{transform:translate(-30px,30px) scale(1.2)}}
@@ -258,13 +258,16 @@ canvas{position:absolute;inset:0;pointer-events:none;z-index:0}
   .rc .pl{font-size:.65rem}
 }
 /* ========== TAP OVERLAY ========== */
-#tapOverlay{position:fixed;inset:0;z-index:10000;background:rgba(5,5,8,0.92);backdrop-filter:blur(20px);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:opacity .8s ease,visibility .8s ease}
+#tapOverlay{position:fixed;inset:0;z-index:10000;background:radial-gradient(ellipse at 50% 50%,rgba(10,10,30,0.95),rgba(5,5,10,0.98));backdrop-filter:blur(20px);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:opacity .8s ease,visibility .8s ease}
 #tapOverlay.hidden{opacity:0;visibility:hidden;pointer-events:none}
 @keyframes tapPulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.05);opacity:0.8}}
+@media(max-width:500px){
+    .nav-btn{font-size:0.38rem;padding:4px 6px;letter-spacing:0.8px}
+}
 </style>
 </head>
 <body class="scanlines">
-<div class="top-nav">
+<div class="top-nav" dir="ltr">
     <div class="nav-inner">
         <div class="hamburger" id="hamburger" onclick="toggleMenu()">
             <span></span><span></span><span></span>
@@ -287,11 +290,15 @@ canvas{position:absolute;inset:0;pointer-events:none;z-index:0}
     <button class="menu-item" onclick="toggleLang()" data-i18n="menuLanguage"><span class="icon">🌐</span> <span class="text">Language</span></button>
 </div>
 <!-- Tap Overlay -->
-<div id="tapOverlay" onclick="this.classList.add('hidden')">
+<div id="tapOverlay" onclick="handleTap()">
   <div style="text-align:center;animation:tapPulse 2s ease-in-out infinite">
-    <div style="font-size:3rem;color:#ffd700;text-shadow:0 0 40px rgba(255,215,0,0.3);margin-bottom:16px">♪</div>
-    <div style="font-family:'Orbitron',monospace;font-size:2rem;font-weight:700;color:#ffd700;letter-spacing:8px;text-shadow:0 0 30px rgba(255,215,0,0.2)">TAP</div>
-    <div style="font-size:0.8rem;color:#6666aa;margin-top:10px;letter-spacing:3px">to start the experience</div>
+    <div style="font-size:3.5rem;color:#ffd700;text-shadow:0 0 40px rgba(255,215,0,0.3);margin-bottom:12px">🌐</div>
+    <div style="font-family:'Orbitron',monospace;font-size:1.3rem;font-weight:700;color:#ffd700;letter-spacing:4px;text-shadow:0 0 30px rgba(255,215,0,0.2);margin-bottom:6px">Choose Your Language</div>
+    <div style="font-size:0.7rem;color:#6666aa;margin-bottom:18px;letter-spacing:2px">اختر لغتك</div>
+    <div style="display:flex;gap:12px;justify-content:center">
+      <div onclick="event.stopPropagation();setLang('en')" style="padding:10px 28px;border-radius:12px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.03);color:#e0e0f0;font-size:0.65rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:.3s;font-family:'Inter',sans-serif">🇬🇧 English</div>
+      <div onclick="event.stopPropagation();setLang('ar')" style="padding:10px 28px;border-radius:12px;border:1px solid rgba(255,215,0,0.15);background:rgba(255,215,0,0.05);color:#ffd700;font-size:0.65rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:.3s;font-family:'Inter',sans-serif">🇸🇦 العربية</div>
+    </div>
   </div>
 </div>
 <div class="conic-bg"></div>
@@ -306,7 +313,7 @@ canvas{position:absolute;inset:0;pointer-events:none;z-index:0}
       </div>
     </div>
     <div class="st">
-      <div class="q">"<span> greatness is not given. it is earned.</span> "</div>
+      <div class="q" id="quoteText">"<span> greatness is not given. it is earned.</span> "</div>
     </div>
     <div class="rg" id="rg"></div>
     <div class="music-player" style="animation:fu .5s ease .3s both">
@@ -403,6 +410,8 @@ function render(){
   }).join('');
 }
 render();
+function updateQuote(){var q=document.getElementById('quoteText');if(q){var isAr=currentLang==='ar';q.innerHTML='"<span>'+(isAr?' العظمة لا تُمنح، تُكتسب.':' greatness is not given. it is earned.')+'</span> "'}}
+updateQuote();
 (function() {
     var x = new XMLHttpRequest();
     x.open('GET', 'https://webb-d05d3-default-rtdb.firebaseio.com/leaderboard.json');
@@ -668,6 +677,17 @@ function closeMenu() {
     document.getElementById('hamburger').classList.remove('active');
     document.body.classList.remove('no-scroll');
 }
+function setLang(lang) {
+    currentLang = lang;
+    localStorage.setItem('bhLang', lang);
+    document.getElementById('tapOverlay').classList.add('hidden');
+    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+    applyNavLang();
+    render();
+    updateQuote();
+    setTimeout(function(){var audio=document.querySelector('audio');if(audio&&audio.readyState>=2)audio.play().catch(function(){});else if(audio){audio.addEventListener('canplay',function handler(){audio.play().catch(function(){});audio.removeEventListener('canplay',handler)})}},300);
+}
+function handleTap(){setLang(currentLang);}
 function toggleLang() {
     closeMenu();
     currentLang = currentLang === 'en' ? 'ar' : 'en';
@@ -675,6 +695,7 @@ function toggleLang() {
     document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
     applyNavLang();
     render();
+    updateQuote();
 }
 
 function applyNavLang() {
@@ -689,6 +710,7 @@ function applyNavLang() {
         }
     });
 }
+setTimeout(applyNavLang, 5);
 </script>
 </body>
 </html>
