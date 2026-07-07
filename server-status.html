@@ -473,7 +473,7 @@ function fetchTimer() {
     x.onload = function() {
         try {
             var d = JSON.parse(x.responseText);
-            if (d && d.active && d.endTime) {
+            if (d && d.endTime) {
                 timerData = d;
                 document.getElementById('timerDisplay').style.display = '';
                 document.getElementById('noTimer').style.display = 'none';
@@ -491,15 +491,19 @@ function fetchTimer() {
     x.send();
 }
 function updateTimerDisplay() {
-    if (!timerData || !timerData.active) return;
+    if (!timerData) return;
     var rem = timerData.endTime - Date.now();
     var isAr = currentLang === 'ar';
     var titleEl = document.getElementById('timerLabel');
     var countEl = document.getElementById('timerCountdown');
+    var ended = !timerData.active || rem <= 0;
+    if (ended) { titleEl.style.color = '#ff4444'; }
+    else { titleEl.style.color = ''; }
     titleEl.textContent = '⏳ ' + (timerData.title || (isAr ? 'العد التنازلي' : 'Countdown'));
-    if (rem <= 0) {
+    if (ended) {
         countEl.textContent = '0d 00h 00m 00s';
         countEl.className = 'timer-countdown over';
+        if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
     } else {
         var days = Math.floor(rem / 86400000);
         var hours = Math.floor((rem % 86400000) / 3600000);
