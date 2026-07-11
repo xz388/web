@@ -1735,7 +1735,11 @@ function fetchEOTW() {
         document.getElementById('eotwTitle').textContent = d.title || 'Edit Of The Week';
         var player = document.getElementById('eotwPlayer');
         if (d.type === 'local') {
-          player.innerHTML = '<video controls autoplay muted playsinline preload="auto" onplay="pauseSiteMusic()" onpause="resumeSiteMusic()"><source src="videos/'+d.localFile+'" type="video/mp4"></video>';
+          var vidUrl = 'videos/'+d.localFile;
+          fetch(vidUrl).then(function(r){return r.blob()}).then(function(blob){
+            var url = URL.createObjectURL(blob);
+            player.innerHTML = '<video controls autoplay muted playsinline onplay="pauseSiteMusic()" onpause="resumeSiteMusic()"><source src="'+url+'" type="video/mp4"></video>';
+          }).catch(function(){player.innerHTML = '<video controls muted playsinline><source src="'+vidUrl+'" type="video/mp4"></video>'});
         } else {
           player.innerHTML = '<iframe src="'+d.url+'" allow="autoplay; fullscreen" allowfullscreen loading="lazy"></iframe>';
         }
