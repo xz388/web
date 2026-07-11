@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BrotherHood — Edit Of The Week Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600;700&family=Playfair+Display:ital@0;1&family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        html, body { height:100%; overflow:hidden; }
+        body {
+            background:#050508; color:#e8e8f0; font-family:'Inter',sans-serif;
+            background-image:
+                radial-gradient(ellipse at 15% 20%, rgba(255,215,0,0.05) 0%, transparent 60%),
+                radial-gradient(ellipse at 85% 80%, rgba(180,120,20,0.03) 0%, transparent 60%);
+        }
+        .scanline {
+            position:fixed; inset:0; pointer-events:none; z-index:9999;
+            background:repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.008) 2px, rgba(255,255,255,0.008) 4px);
+        }
+        .page {
+            width:100%; height:100vh; overflow:hidden;
+            background:linear-gradient(165deg,#0a0a18 0%,#060610 40%,#0c0c1a 100%);
+            display:flex; align-items:center; justify-content:center; padding:0 60px; position:relative;
+        }
+        .page::before {
+            content:''; position:absolute; top:-60%; left:-50%; width:200%; height:200%;
+            background:conic-gradient(from 30deg at 50% 50%, transparent 0%, rgba(255,215,0,0.015) 25%, rgba(180,120,20,0.01) 35%, transparent 50%, rgba(255,215,0,0.008) 75%, transparent 100%);
+            animation:spin 30s linear infinite; pointer-events:none;
+        }
+        @keyframes spin { 100% { transform:rotate(360deg); } }
+        .page::after {
+            content:''; position:absolute; inset:0;
+            background:radial-gradient(ellipse at 50% 0%, rgba(255,215,0,0.06) 0%, transparent 50%);
+            pointer-events:none;
+        }
+        .inner {
+            position:relative; z-index:1;
+            width:100%; max-width:500px; max-height:100vh; display:flex; flex-direction:column;
+        }
+        .top {
+            display:flex; align-items:center; gap:16px; margin-bottom:22px; flex-shrink:0;
+            padding:14px 22px; border-radius:16px;
+            background:rgba(255,255,255,0.02); border:1px solid rgba(255,215,0,0.06);
+            backdrop-filter:blur(16px); position:relative; overflow:hidden;
+            animation:fadeDown 0.4s ease both;
+        }
+        @keyframes fadeDown { from { opacity:0; transform:translateY(-10px); } to { opacity:1; transform:translateY(0); } }
+        .top::before {
+            content:''; position:absolute; top:0; left:0; right:0; height:1px;
+            background:linear-gradient(90deg, transparent, rgba(255,215,0,0.2), transparent);
+        }
+        .top a {
+            color:#5555aa; text-decoration:none; font-size:0.6rem; transition:0.3s;
+            letter-spacing:2px; display:flex; align-items:center; gap:6px;
+            padding:7px 12px; border-radius:8px; background:rgba(255,255,255,0.02);
+            border:1px solid rgba(255,255,255,0.03); font-weight:600;
+        }
+        .top a:hover { color:#ffd700; background:rgba(255,215,0,0.04); border-color:rgba(255,215,0,0.08); }
+        .top .title-group { flex:1; text-align:center; }
+        .top .title-group h1 {
+            font-family:'Orbitron',monospace; font-size:0.85rem; color:#ffd700;
+            letter-spacing:4px; text-shadow:0 0 30px rgba(255,215,0,0.08);
+        }
+        .top .title-group span {
+            display:block; font-family:'Playfair Display',serif; font-style:italic;
+            font-size:0.55rem; color:#555599; letter-spacing:5px; font-weight:400; margin-top:3px;
+        }
+        .form-scroll {
+            flex:1; overflow-y:auto; min-height:0; padding:4px 6px 4px 0;
+        }
+        .form-scroll::-webkit-scrollbar { width:3px; }
+        .form-scroll::-webkit-scrollbar-track { background:transparent; }
+        .form-scroll::-webkit-scrollbar-thumb { background:rgba(255,215,0,0.08); border-radius:10px; }
+        .fade-group { animation:fadeUp 0.5s ease both; }
+        .fade-group:nth-child(1) { animation-delay:0.05s; }
+        .fade-group:nth-child(2) { animation-delay:0.10s; }
+        .fade-group:nth-child(3) { animation-delay:0.15s; }
+        .fade-group:nth-child(4) { animation-delay:0.20s; }
+        .fade-group:nth-child(5) { animation-delay:0.25s; }
+        .fade-group:nth-child(6) { animation-delay:0.30s; }
+        .fade-group:nth-child(7) { animation-delay:0.35s; }
+        @keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+        .field-wrap { margin-bottom:14px; }
+        .field-wrap label {
+            display:block; font-size:0.5rem; color:#5555aa;
+            letter-spacing:2.5px; margin-bottom:6px; text-transform:uppercase; font-weight:600;
+        }
+        .field-wrap input, .field-wrap select {
+            width:100%; padding:11px 16px; border-radius:10px;
+            border:1px solid rgba(255,255,255,0.03);
+            background:rgba(255,255,255,0.01);
+            color:#ddd; font-size:0.82rem; outline:none;
+            font-family:'Inter',sans-serif; transition:all 0.3s;
+        }
+        .field-wrap input:focus, .field-wrap select:focus {
+            border-color:rgba(255,215,0,0.2);
+            background:rgba(255,215,0,0.015);
+            box-shadow:0 0 30px rgba(255,215,0,0.04), inset 0 0 20px rgba(255,215,0,0.01);
+        }
+        .btn {
+            padding:13px 22px; border:none; border-radius:12px; cursor:pointer;
+            font-weight:700; font-size:0.65rem; letter-spacing:3px; text-transform:uppercase;
+            width:100%; transition:all 0.4s cubic-bezier(0.175,0.885,0.32,1.275);
+            position:relative; overflow:hidden;
+        }
+        .btn-gold {
+            background:linear-gradient(135deg,#ffd700,#b8860b,#ffd700);
+            background-size:200% 200%;
+            color:#050508; animation:shimmer 4s ease infinite;
+        }
+        @keyframes shimmer { 0%,100% { background-position:0% 50%; } 50% { background-position:100% 50%; } }
+        .btn-gold:hover { transform:translateY(-2px) scale(1.01); box-shadow:0 10px 40px rgba(255,215,0,0.15); }
+        .btn-outline {
+            background:rgba(255,255,255,0.01); color:#8888bb;
+            border:1px solid rgba(255,255,255,0.04); margin-top:6px;
+        }
+        .btn-outline:hover { background:rgba(255,255,255,0.04); border-color:rgba(255,215,0,0.08); color:#ffd700; transform:translateY(-1px); }
+        .btn-group { display:flex; gap:8px; margin-top:6px; }
+        .btn-group .btn { margin-top:0; }
+        .btn-type {
+            background:rgba(255,255,255,0.02); color:#6666aa;
+            border:1px solid rgba(255,255,255,0.04);
+            margin-top:0; padding:11px 16px;
+        }
+        .btn-type:hover { background:rgba(255,255,255,0.04); color:#9999cc; transform:translateY(-1px); }
+        .btn-type.active {
+            background:rgba(255,215,0,0.08); color:#ffd700;
+            border-color:rgba(255,215,0,0.15);
+        }
+        hr { border:none; height:1px; background:linear-gradient(90deg, transparent, rgba(255,215,0,0.06), transparent); margin:14px 0; flex-shrink:0; }
+        .toggle-wrap {
+            display:flex; align-items:center; gap:14px;
+            padding:14px 18px; border-radius:14px;
+            border:1px solid rgba(255,215,0,0.06);
+            background:rgba(255,255,255,0.015);
+            backdrop-filter:blur(14px);
+            position:relative; overflow:hidden;
+        }
+        .toggle-wrap::before {
+            content:''; position:absolute; bottom:0; left:10%; right:10%; height:1px;
+            background:linear-gradient(90deg, transparent, rgba(255,215,0,0.08), transparent);
+        }
+        .toggle-wrap label { font-size:0.5rem; color:#5555aa; letter-spacing:2.5px; text-transform:uppercase; font-weight:600; margin-bottom:0; display:block; }
+        .toggle-switch {
+            position:relative; width:42px; height:22px; flex-shrink:0; cursor:pointer;
+        }
+        .toggle-switch input { opacity:0; width:0; height:0; position:absolute; }
+        .toggle-switch .slider {
+            position:absolute; inset:0; border-radius:11px;
+            background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.06);
+            transition:all 0.3s;
+        }
+        .toggle-switch .slider::before {
+            content:''; position:absolute; width:16px; height:16px; border-radius:50%;
+            left:2px; top:2px; background:#5555aa; transition:all 0.3s;
+        }
+        .toggle-switch input:checked + .slider {
+            background:rgba(255,215,0,0.12); border-color:rgba(255,215,0,0.2);
+        }
+        .toggle-switch input:checked + .slider::before {
+            transform:translateX(20px); background:#ffd700;
+        }
+        .preview-box {
+            border-radius:14px; overflow:hidden;
+            border:1px solid rgba(255,215,0,0.06);
+            background:rgba(0,0,0,0.3);
+            position:relative; aspect-ratio:16/9;
+            display:flex; align-items:center; justify-content:center;
+        }
+        .preview-box iframe, .preview-box video {
+            width:100%; height:100%; border:none; display:block;
+        }
+        .preview-box .placeholder {
+            font-size:0.6rem; color:#5555aa; letter-spacing:2px; text-align:center;
+        }
+        .music-bar {
+            flex-shrink:0; margin-top:14px;
+            padding:12px 18px; border-radius:14px;
+            border:1px solid rgba(255,215,0,0.06);
+            background:rgba(255,255,255,0.015);
+            backdrop-filter:blur(14px);
+            display:flex; align-items:center; gap:12px;
+            position:relative; overflow:hidden;
+            animation:fadeUp 0.5s ease 0.30s both;
+        }
+        .music-bar::before {
+            content:''; position:absolute; bottom:0; left:10%; right:10%; height:1px;
+            background:linear-gradient(90deg, transparent, rgba(255,215,0,0.08), transparent);
+        }
+        .music-bar .info { flex:1; overflow:hidden; }
+        .music-bar .info .track-name { font-size:0.65rem; color:#9999bb; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-weight:400; }
+        .music-bar .info .track-status { font-size:0.5rem; color:#5555aa; margin-top:2px; }
+        .music-bar .ctrl {
+            background:none; border:1px solid rgba(255,215,0,0.06);
+            color:#ffd700; cursor:pointer; font-size:0.9rem;
+            width:32px; height:32px; border-radius:9px;
+            display:flex; align-items:center; justify-content:center;
+            transition:all 0.3s; flex-shrink:0;
+        }
+        .music-bar .ctrl:hover { background:rgba(255,215,0,0.08); border-color:rgba(255,215,0,0.15); transform:scale(1.08); }
+        .music-bar .ctrl.vol { color:#6666aa; border-color:rgba(255,255,255,0.04); }
+        .music-bar .ctrl.vol:hover { color:#ffd700; }
+        @media (max-width:700px) {
+            .page { padding:0 16px; }
+            .top { padding:10px 14px; gap:8px; flex-wrap:wrap; justify-content:center; }
+            .top .title-group { order:-1; width:100%; }
+            .row { gap:6px; }
+            .field-wrap { margin-bottom:10px; }
+        }
+    </style>
+</head>
+<body>
+<div class="scanline"></div>
+<div class="page">
+    <div class="inner">
+        <div class="top">
+            <a href="admin.html">← Dashboard</a>
+            <div class="title-group">
+                <h1>✦ Edit Of The Week ✦</h1>
+                <span>Manage the featured video on the home page</span>
+            </div>
+        </div>
+        <div class="form-scroll">
+            <div class="fade-group">
+                <div class="field-wrap">
+                    <label>Title — Edit Of The Week</label>
+                    <input type="text" id="vidTitle" placeholder="e.g. My best edit" />
+                </div>
+            </div>
+            <div class="fade-group">
+                <div class="field-wrap">
+                    <label>Source Type</label>
+                    <div class="btn-group">
+                        <button class="btn btn-type active" id="btnYoutube" onclick="setType('youtube')">YouTube URL</button>
+                        <button class="btn btn-type" id="btnLocal" onclick="setType('local')">Local File</button>
+                    </div>
+                </div>
+            </div>
+            <div class="fade-group" id="youtubeSection">
+                <div class="field-wrap">
+                    <label>YouTube Embed URL</label>
+                    <input type="text" id="vidUrl" placeholder="e.g. https://www.youtube.com/embed/xxxxx" />
+                </div>
+            </div>
+            <div class="fade-group" id="localSection" style="display:none;">
+                <div class="field-wrap">
+                    <label>Filename in videos/ folder</label>
+                    <input type="text" id="vidFile" placeholder="e.g. myclip.mp4" />
+                </div>
+            </div>
+            <div class="fade-group">
+                <div class="toggle-wrap" style="margin-bottom:14px;">
+                    <div style="flex:1;">
+                        <label>Active on Home Page</label>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="vidActive" checked />
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+            <div class="fade-group">
+                <div class="btn-group">
+                    <button class="btn btn-gold" id="btnSave">Save</button>
+                    <button class="btn btn-outline" id="btnRefresh">⟳ Refresh</button>
+                </div>
+            </div>
+            <hr />
+            <div class="fade-group">
+                <div class="field-wrap">
+                    <label>Preview</label>
+                    <div class="preview-box" id="previewBox">
+                        <div class="placeholder">No video configured</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="music-bar">
+            <button class="ctrl" id="abPlay">▶</button>
+            <div class="info">
+                <div class="track-name" id="abTrack">No track</div>
+                <div class="track-status" id="abStatus">—</div>
+            </div>
+            <button class="ctrl vol" id="abVol">♫</button>
+        </div>
+    </div>
+</div>
+<script>
+var FB_URL = 'https://webb-d05d3-default-rtdb.firebaseio.com';
+var _type = 'youtube';
+
+function setType(t) {
+    _type = t;
+    document.getElementById('btnYoutube').classList.toggle('active', t === 'youtube');
+    document.getElementById('btnLocal').classList.toggle('active', t === 'local');
+    document.getElementById('youtubeSection').style.display = t === 'youtube' ? '' : 'none';
+    document.getElementById('localSection').style.display = t === 'local' ? '' : 'none';
+    updatePreview();
+}
+
+function getConfig() {
+    var title = document.getElementById('vidTitle').value.trim();
+    var url = document.getElementById('vidUrl').value.trim();
+    var file = document.getElementById('vidFile').value.trim();
+    var active = document.getElementById('vidActive').checked;
+    return { title: title, type: _type, url: _type === 'youtube' ? url : '', active: active, localFile: _type === 'local' ? file : '' };
+}
+
+function populateForm(cfg) {
+    if (!cfg) return;
+    document.getElementById('vidTitle').value = cfg.title || '';
+    document.getElementById('vidUrl').value = cfg.url || '';
+    document.getElementById('vidFile').value = cfg.localFile || '';
+    document.getElementById('vidActive').checked = cfg.active !== false;
+    setType(cfg.type || 'youtube');
+}
+
+function updatePreview() {
+    var box = document.getElementById('previewBox');
+    var cfg = getConfig();
+    if (cfg.type === 'youtube' && cfg.url) {
+        box.innerHTML = '<iframe src="' + cfg.url.replace(/"/g, '&quot;') + '" allow="autoplay; encrypted-media" allowfullscreen></iframe>';
+    } else if (cfg.type === 'local' && cfg.localFile) {
+        box.innerHTML = '<video controls preload="metadata"><source src="videos/' + cfg.localFile.replace(/"/g, '&quot;') + '" type="video/mp4">Your browser does not support video.</video>';
+    } else {
+        box.innerHTML = '<div class="placeholder">No video configured</div>';
+    }
+}
+
+function loadFromFB() {
+    var x = new XMLHttpRequest();
+    x.open('GET', FB_URL + '/editOfTheWeek.json');
+    x.onload = function() {
+        try {
+            var data = JSON.parse(x.responseText);
+            populateForm(data);
+            updatePreview();
+        } catch(e) {}
+    };
+    x.send();
+}
+
+function saveToFB() {
+    var cfg = getConfig();
+    var x = new XMLHttpRequest();
+    x.open('PUT', FB_URL + '/editOfTheWeek.json');
+    x.setRequestHeader('Content-Type', 'application/json');
+    x.onload = function() {
+        updatePreview();
+        var btn = document.getElementById('btnSave');
+        btn.textContent = '✓ Saved';
+        btn.style.background = 'rgba(255,215,0,0.12)';
+        btn.style.color = '#ffd700';
+        setTimeout(function() {
+            btn.textContent = 'Save';
+            btn.style.background = '';
+            btn.style.color = '';
+        }, 1500);
+    };
+    x.onerror = function() {
+        alert('Failed to save. Check your connection.');
+    };
+    x.send(JSON.stringify(cfg));
+}
+
+document.getElementById('btnSave').addEventListener('click', saveToFB);
+document.getElementById('btnRefresh').addEventListener('click', loadFromFB);
+document.getElementById('vidUrl').addEventListener('input', updatePreview);
+document.getElementById('vidFile').addEventListener('input', updatePreview);
+document.getElementById('vidTitle').addEventListener('input', updatePreview);
+
+loadFromFB();
+try { localStorage.setItem('bhFromInternal', '1'); } catch(e) {}
+var abPlay = document.getElementById('abPlay'), abTrack = document.getElementById('abTrack'), abStatus = document.getElementById('abStatus'), abVol = document.getElementById('abVol');
+var aa = new Audio(); aa.volume = 0.05;
+try {
+    var s = JSON.parse(localStorage.getItem('bhAudio'));
+    if (s && s.src) {
+        aa.src = s.src;
+        if (s.ct > 0) aa.currentTime = s.ct;
+        aa.volume = s.vol || 0.05; aa.muted = s.muted || false;
+        if (s.playing) aa.play().catch(function(){});
+        abTrack.textContent = decodeURIComponent(s.src.split('/').pop().replace(/%20/g,' ')).replace(/\.mp3$/,'');
+        abPlay.textContent = s.playing ? '⏸' : '▶';
+    }
+} catch(e) {}
+function as() { try { localStorage.setItem('bhAudio',JSON.stringify({src:aa.src,ct:aa.currentTime,cur:0,vol:aa.volume,playing:!aa.paused,muted:aa.muted})); } catch(e) {} }
+aa.addEventListener('play', function(){ abPlay.textContent='⏸'; abStatus.textContent='Playing'; as(); });
+aa.addEventListener('pause', function(){ abPlay.textContent='▶'; abStatus.textContent='Paused'; as(); });
+aa.addEventListener('timeupdate', as);
+abPlay.addEventListener('click', function(){ if(aa.src){ if(aa.paused) aa.play().catch(function(){}); else aa.pause(); }});
+abVol.addEventListener('click', function(){ aa.muted=!aa.muted; abVol.textContent=aa.muted?'♪':'♫'; as(); });
+setInterval(function(){ if(!aa.paused&&aa.duration) abStatus.textContent=(aa.currentTime/aa.duration*100).toFixed(0)+'%'; },2000);
+</script>
+</body>
+</html>

@@ -418,6 +418,16 @@
         .nav-bar .nav-btn:hover::before { opacity: 1; }
         .nav-bar .nav-btn:hover { color: #050508; }
 
+        /* ========== EDIT OF THE WEEK ========== */
+        .eotw-wrap{background:linear-gradient(145deg,rgba(255,215,0,0.04),rgba(10,10,30,0.6));border:1px solid rgba(255,215,0,0.08);border-radius:18px;padding:22px;position:relative;overflow:hidden;transition:.4s}
+        .eotw-wrap::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,215,0,0.2),transparent)}
+        .eotw-wrap::after{content:'';position:absolute;inset:0;border-radius:18px;border:1px solid transparent;pointer-events:none;transition:.4s}
+        .eotw-wrap:hover::after{border-color:rgba(255,215,0,0.06)}
+        .eotw-wrap:hover{transform:translateY(-2px);box-shadow:0 12px 50px rgba(0,0,0,.4)}
+        .eotw-title{font-family:'Playfair Display',serif;font-style:italic;font-size:1rem;color:#8888bb;text-align:center;margin-bottom:14px;letter-spacing:1px;font-weight:400}
+        .eotw-player{position:relative;width:100%;border-radius:12px;overflow:hidden;background:#000;aspect-ratio:16/9;box-shadow:0 0 40px rgba(255,215,0,0.04)}
+        .eotw-player iframe,.eotw-player video{width:100%;height:100%;border:none;display:block}
+
         /* ========== POLL ========== */
         .poll-card {
             background:linear-gradient(145deg, rgba(255,215,0,0.04), rgba(255,215,0,0.01));
@@ -909,6 +919,19 @@
             <a data-i18n="viewLeaderboard" href="leaderboard.html" onclick="try{localStorage.setItem('bhFromInternal','1')}catch(e){}" style="padding:8px 20px;border-radius:8px;border:1px solid rgba(255,215,0,0.2);background:rgba(255,215,0,0.05);color:#ffd700;text-decoration:none;font-size:0.65rem;font-weight:600;letter-spacing:1px;transition:0.3s;">View Leaderboard →</a>
         </div>
     </div>
+
+    <!-- ===== EDIT OF THE WEEK ===== -->
+    <section id="eotwSection" class="section fade-in" style="display:none">
+        <div class="section-header">
+            <div class="line line-left"></div>
+            <h2>✦ Edit Of The Week ✦</h2>
+            <div class="line"></div>
+        </div>
+        <div class="eotw-wrap" id="eotwWrap">
+            <div class="eotw-title" id="eotwTitle">—</div>
+            <div class="eotw-player" id="eotwPlayer"></div>
+        </div>
+    </section>
 
     <!-- ===== MEMBERS ===== -->
     <section class="section fade-in" dir="ltr">
@@ -1699,6 +1722,44 @@ function syncPollFromFB() {
   };
   x.send();
 }
+function fetchEOTW() {
+  var x = new XMLHttpRequest();
+  x.open('GET', FB_URL+'/editOfTheWeek.json');
+  x.onload = function() {
+    try {
+      var d = JSON.parse(x.responseText);
+      var sec = document.getElementById('eotwSection');
+      var wrap = document.getElementById('eotwWrap');
+      if (d && d.active && d.url) {
+        sec.style.display = '';
+        document.getElementById('eotwTitle').textContent = d.title || 'Edit Of The Week';
+        var player = document.getElementById('eotwPlayer');
+        if (d.type === 'local') {
+          player.innerHTML = '<video src="'+d.url+'" controls autoplay muted loop playsinline onplay="pauseSiteMusic()" onpause="resumeSiteMusic()"></video>';
+        } else {
+          player.innerHTML = '<iframe src="'+d.url+'" allow="autoplay; fullscreen" allowfullscreen loading="lazy"></iframe>';
+        }
+      } else {
+        sec.style.display = 'none';
+      }
+    } catch(e) {}
+  };
+  x.send();
+}
+function pauseSiteMusic() {
+  try {
+    var a = document.querySelector('audio');
+    if (a && !a.paused) { a.dataset.eotwPaused = '1'; a.pause(); }
+    var pb = document.getElementById('mpPlay');
+    if (pb) pb.textContent = '▶';
+  } catch(e) {}
+}
+function resumeSiteMusic() {
+  try {
+    var a = document.querySelector('audio');
+    if (a && a.dataset.eotwPaused) { delete a.dataset.eotwPaused; }
+  } catch(e) {}
+}
 function syncPollToFB(p) {
   setPoll(p);
   var x = new XMLHttpRequest();
@@ -1827,7 +1888,9 @@ function vote(choice) {
     renderPoll();
 }
 syncPollFromFB();
+fetchEOTW();
 setInterval(syncPollFromFB, 30000);
+setInterval(fetchEOTW, 30000);
 // ==================== SECRET ADMIN PANEL (MMM) ====================
 let _mCount = 0;
 let _mTimer = null;
