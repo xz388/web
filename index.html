@@ -1735,7 +1735,7 @@ function fetchEOTW() {
         document.getElementById('eotwTitle').textContent = d.title || 'Edit Of The Week';
         var player = document.getElementById('eotwPlayer');
         if (d.type === 'local') {
-          player.innerHTML = '<video src="videos/'+d.localFile+'" controls autoplay muted loop playsinline onplay="pauseSiteMusic()" onpause="resumeSiteMusic()"></video>';
+          player.innerHTML = '<video src="videos/'+d.localFile+'" controls autoplay muted playsinline preload="metadata" onplay="pauseSiteMusic()" onpause="resumeSiteMusic()"></video>';
         } else {
           player.innerHTML = '<iframe src="'+d.url+'" allow="autoplay; fullscreen" allowfullscreen loading="lazy"></iframe>';
         }
@@ -1757,7 +1757,9 @@ function pauseSiteMusic() {
 function resumeSiteMusic() {
   try {
     var a = document.querySelector('audio');
-    if (a && a.dataset.eotwPaused) { delete a.dataset.eotwPaused; }
+    if (a && a.dataset.eotwPaused) { delete a.dataset.eotwPaused; a.play().catch(function(){}); }
+    var pb = document.getElementById('mpPlay');
+    if (pb && a && !a.paused) pb.textContent = '⏸';
   } catch(e) {}
 }
 function syncPollToFB(p) {
