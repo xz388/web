@@ -1735,7 +1735,7 @@ function fetchEOTW() {
         document.getElementById('eotwTitle').textContent = d.title || 'Edit Of The Week';
         var player = document.getElementById('eotwPlayer');
         if (d.type === 'local') {
-          player.innerHTML = '<video src="videos/'+d.localFile+'" controls autoplay muted playsinline preload="metadata" onplay="pauseSiteMusic()" onpause="resumeSiteMusic()"></video>';
+          player.innerHTML = '<video controls autoplay muted playsinline preload="auto" onplay="pauseSiteMusic()" onpause="resumeSiteMusic()"><source src="videos/'+d.localFile+'" type="video/mp4"></video>';
         } else {
           player.innerHTML = '<iframe src="'+d.url+'" allow="autoplay; fullscreen" allowfullscreen loading="lazy"></iframe>';
         }
