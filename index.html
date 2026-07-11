@@ -1730,12 +1730,12 @@ function fetchEOTW() {
       var d = JSON.parse(x.responseText);
       var sec = document.getElementById('eotwSection');
       var wrap = document.getElementById('eotwWrap');
-      if (d && d.active && d.url) {
+      if (d && d.active && ((d.type === 'youtube' && d.url) || (d.type === 'local' && d.localFile))) {
         sec.style.display = '';
         document.getElementById('eotwTitle').textContent = d.title || 'Edit Of The Week';
         var player = document.getElementById('eotwPlayer');
         if (d.type === 'local') {
-          player.innerHTML = '<video src="'+d.url+'" controls autoplay muted loop playsinline onplay="pauseSiteMusic()" onpause="resumeSiteMusic()"></video>';
+          player.innerHTML = '<video src="videos/'+d.localFile+'" controls autoplay muted loop playsinline onplay="pauseSiteMusic()" onpause="resumeSiteMusic()"></video>';
         } else {
           player.innerHTML = '<iframe src="'+d.url+'" allow="autoplay; fullscreen" allowfullscreen loading="lazy"></iframe>';
         }
